@@ -1,5 +1,5 @@
 .sidebar {
-    width: 220px;
+    width: 240px;
     height: 100vh;
     background-color: #1e1e2f;
     color: #fff;
@@ -7,6 +7,7 @@
     position: fixed;
     top: 0;
     left: 0;
+    text-align: left;
 }
 
 .sidebar h2 {
@@ -20,18 +21,21 @@
 .sidebar ul {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .sidebar li {
-    padding: 12px 16px;
+    padding: 10px 15px;
     margin-bottom: 10px;
     cursor: pointer;
     border-radius: 8px;
     transition: background 0.2s ease;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     color: #fff;
+    gap: 10px;
+    text-align: left;
 }
 
 .sidebar li:hover {
@@ -44,6 +48,7 @@
 
 .dropdown-parent {
     position: relative;
+    justify-content: space-between;
 }
 
 .dropdown-arrow {
@@ -51,14 +56,20 @@
 }
 
 .dropdown-children {
+    list-style: none;
+    padding-left: 30px;
     margin-left: 15px;
-    background-color: #2e2e4d;
     border-radius: 6px;
     padding: 6px 0;
 }
 
 .dropdown-children li {
-    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    text-align: left;
+    padding: 10px 15px 10px 25px;
     margin: 4px 0;
-    font-size: 14px;
+    font-size: 16px;
 }
