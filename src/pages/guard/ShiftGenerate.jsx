@@ -1,8 +1,10 @@
 import React from 'react';
 import { useEffect, useContext, useState } from 'react';
 import axios from 'axios';
-import { TitleContext } from '../context/TitleContext';
+import { TitleContext } from '../../context/TitleContext';
 import './ShiftGenerate.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 axios.defaults.withCredentials = true;
 
@@ -26,8 +28,15 @@ const ShiftGenerate = () => {
                 withCredentials: true
             });
             setShifts(res.data);
+            setRetries(res.data.length);
         } catch (err) {
-            console.error("Error loading shifts", err);
+            console.error("Error loading generated shifts", err);
+            const status = err.response?.status;
+            if (status && status !== 404) {
+                toast.error("Không thể tải danh sách ca trực. Vui lòng thử lại sau.");
+            }
+            setShifts([]);
+            setRetries(0);
         }
     };
 
@@ -43,6 +52,8 @@ const ShiftGenerate = () => {
             setRetries(prev => prev + 1);
         } catch (err) {
             console.error("Error generating shift", err);
+            const message = err.response?.data?.message || "Có lỗi xảy ra khi tạo ca trực. Vui lòng thử lại sau.";
+            toast.error(message);
         }
     };
 
@@ -52,10 +63,12 @@ const ShiftGenerate = () => {
             await axios.post(`http://localhost:8080/api/shifts/${currentShift.id}/accept`, {}, {
                 withCredentials: true
             });
-            alert("Hệ thống đã chấp nhận ca trực!");
-            fetchGeneratedShifts();
+            toast.success("Hệ thống đã chấp nhận ca trực!");
+            setShifts([]);
+            setCurrentShift(null);
         } catch (err) {
             console.error("Error accepting shift", err);
+            toast.error("Có lỗi xảy ra khi chấp nhận ca trực. Vui lòng thử lại sau.");
         }
     };
 
@@ -94,17 +107,18 @@ const ShiftGenerate = () => {
                     ) : (
                         <select value={selectedBlock} onChange={(e) => setSelectedBlock(e.target.value)}>
                             <option value="">-- Block --</option>
-                            <option value="BLOCK1">Block 3</option>
-                            <option value="BLOCK2">Block 4</option>
-                            <option value="BLOCK3">Block 5</option>
-                            <option value="BLOCK4">Block 6</option>
-                            <option value="BLOCK5">Block 8</option>
-                            <option value="BLOCK6">Block 10</option>
-                            <option value="BLOCK8">Block 11</option>
+                            <option value="BLOCK_3">Block 3</option>
+                            <option value="BLOCK_4">Block 4</option>
+                            <option value="BLOCK_5">Block 5</option>
+                            <option value="BLOCK_6">Block 6</option>
+                            <option value="BLOCK_8">Block 8</option>
+                            <option value="BLOCK_10">Block 10</option>
+                            <option value="BLOCK_11">Block 11</option>
                         </select>
                     )}
                 </div>
-                <button onClick={handleGenerate} disabled={retries >= 3 || (mode === 'TIME' && !selectedTime) || (mode === 'BLOCK' && !selectedBlock)}>
+                <button onClick={handleGenerate}
+                        disabled={retries >= 3 || (mode === 'TIME' && !selectedTime) || (mode === 'BLOCK' && !selectedBlock)}>
                     Tạo Ca Trực
                 </button>
                 {currentShift && (
@@ -120,17 +134,15 @@ const ShiftGenerate = () => {
             <div className="previous-shifts">
                 <h3>Danh Sách Ca Trực Đã Tạo</h3>
                 {shifts.map((shift, idx) => (
-                    <div key={idx} className="shift-box">
-                        <p>{shift.timeSlot} - {shift.block}
-                            {shift.isAccepted ? (
-                                <i className="fa-solid fa-check" style={{ color: 'green', marginLeft: '10px' }}></i>
-                            ) : (
-                                <i className="fa-solid fa-xmark" style={{ color: 'red', marginLeft: '10px' }}></i>
-                            )}
-                        </p>
+                    <div key={idx}
+                        className={`shift-box ${currentShift?.id === shift.id ? 'selected' : ''}`}
+                        onClick={() => setCurrentShift(shift)}
+                        style={{ cursor: 'pointer' }}>
+                        <p>{shift.timeSlot} - {shift.block}</p>
                     </div>
                 ))}
             </div>
+            <ToastContainer position="top-right" autoClose={3000} />
         </div>
     );
 };

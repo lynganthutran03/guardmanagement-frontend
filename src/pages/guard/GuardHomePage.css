@@ -1,0 +1,22 @@
+.guard-home-page {
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+    min-height: calc(100vh - 55px);
+}
+
+.guard-home-page h3 {
+    margin-bottom: 10px;
+}
+
+.shift-box {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.shift-info p {
+    margin: 6px 0;
+}
