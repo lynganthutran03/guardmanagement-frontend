@@ -6,7 +6,7 @@ import './GuardHomePage.css';
 
 const GuardHomePage = ({ user }) => {
     const { setTitle } = useContext(TitleContext);
-    const [acceptedShift, setAcceptedShift] = useState(null);
+    const [acceptedShift, setAcceptedShift] = useState([]);
 
     useEffect(() => {
         setTitle('Trang Chủ Bảo Vệ');
@@ -14,7 +14,7 @@ const GuardHomePage = ({ user }) => {
             withCredentials: true
         })
             .then(res => setAcceptedShift(res.data))
-            .catch(() => setAcceptedShift(null));
+            .catch(() => setAcceptedShift([]));
     }, [setTitle]);
 
     return (
@@ -23,12 +23,16 @@ const GuardHomePage = ({ user }) => {
             <p><strong>Mã nhân viên:</strong> {user.identityNumber}</p>
             <div className="shift-box">
                 <h4>Ca trực của bạn hôm nay:</h4>
-                {acceptedShift ? (
-                    <div className="shift-info">
-                        <p><strong>Ca:</strong> {acceptedShift.timeSlot}</p>
-                        <p><strong>Block:</strong> {acceptedShift.block}</p>
-                        <p><strong>Ngày:</strong> {acceptedShift.shiftDate}</p>
-                    </div>
+                {acceptedShift.length > 0 ? (
+                    <ul>
+                        {acceptedShift.map(shift => (
+                            <div className="shift-info" key={shift.id}>
+                                <p><strong>Ngày:</strong> {shift.shiftDate}</p>
+                                <p><strong>Ca trực:</strong> {shift.timeSlot}</p>
+                                <p><strong>Khu vực:</strong> {shift.block}</p>
+                            </div>
+                        ))}
+                    </ul>
                 ) : (
                     <p>Bạn chưa có ca trực nào được chấp nhận hôm nay.</p>
                 )}

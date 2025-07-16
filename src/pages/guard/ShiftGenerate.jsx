@@ -16,6 +16,7 @@ const ShiftGenerate = () => {
     const [mode, setMode] = useState('TIME');
     const [selectedTime, setSelectedTime] = useState('');
     const [selectedBlock, setSelectedBlock] = useState('');
+    const [acceptedShiftToday, setAcceptedShiftToday] = useState([]);
 
     useEffect(() => {
         setTitle('Tạo Lịch Làm Việc');
@@ -29,6 +30,8 @@ const ShiftGenerate = () => {
             });
             setShifts(res.data);
             setRetries(res.data.length);
+            setAcceptedShiftToday(res.data.filter(s => s.accepted));
+            return res.data;
         } catch (err) {
             console.error("Error loading generated shifts", err);
             const status = err.response?.status;
@@ -37,6 +40,7 @@ const ShiftGenerate = () => {
             }
             setShifts([]);
             setRetries(0);
+            return [];
         }
     };
 
@@ -64,7 +68,7 @@ const ShiftGenerate = () => {
                 withCredentials: true
             });
             toast.success("Hệ thống đã chấp nhận ca trực!");
-            setShifts([]);
+            await fetchGeneratedShifts();
             setCurrentShift(null);
         } catch (err) {
             console.error("Error accepting shift", err);
@@ -118,7 +122,10 @@ const ShiftGenerate = () => {
                     )}
                 </div>
                 <button onClick={handleGenerate}
-                        disabled={retries >= 3 || (mode === 'TIME' && !selectedTime) || (mode === 'BLOCK' && !selectedBlock)}>
+                        disabled={retries >= 3 ||
+                        acceptedShiftToday.length > 0 ||
+                        (mode === 'TIME' && !selectedTime) ||
+                        (mode === 'BLOCK' && !selectedBlock)}>
                     Tạo Ca Trực
                 </button>
                 {currentShift && (
@@ -126,7 +133,9 @@ const ShiftGenerate = () => {
                         <p><strong>Ca:</strong> {currentShift.timeSlot}</p>
                         <p><strong>Block:</strong> {currentShift.block}</p>
                         <p><strong>Ngày:</strong> {currentShift.shiftDate}</p>
-                        <button onClick={handleAccept}>Chấp Nhật</button>
+                        <button onClick={handleAccept} disabled={currentShift.isAccepted}>
+                            Chấp Nhận
+                        </button>
                     </div>
                 )}
             </div>
