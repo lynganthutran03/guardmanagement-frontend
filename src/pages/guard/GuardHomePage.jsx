@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect, useContext, useState } from 'react';
+import { React, useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import { TitleContext } from '../../context/TitleContext';
 import './GuardHomePage.css';

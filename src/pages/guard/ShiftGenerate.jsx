@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect, useContext, useState } from 'react';
+import { React, useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import { TitleContext } from '../../context/TitleContext';
 import './ShiftGenerate.css';
@@ -16,16 +15,20 @@ const ShiftGenerate = () => {
     const [mode, setMode] = useState('TIME');
     const [selectedTime, setSelectedTime] = useState('');
     const [selectedBlock, setSelectedBlock] = useState('');
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [acceptedShiftToday, setAcceptedShiftToday] = useState([]);
 
     useEffect(() => {
         setTitle('Tạo Lịch Làm Việc');
-        fetchGeneratedShifts();
     }, [setTitle]);
+
+    useEffect(() => {
+        fetchGeneratedShifts();
+    }, [selectedDate]);
 
     const fetchGeneratedShifts = async () => {
         try {
-            const res = await axios.get('http://localhost:8080/api/shifts/today', {
+            const res = await axios.get('http://localhost:8080/api/shifts?date=${selectedDate}', {
                 withCredentials: true
             });
             setShifts(res.data);
@@ -45,8 +48,6 @@ const ShiftGenerate = () => {
     };
 
     const handleGenerate = async () => {
-        const payload = mode === 'TIME' ? { timeSlot: selectedTime } : { block: selectedBlock };
-
         try {
             const res = await axios.post('http://localhost:8080/api/shifts/generate', payload, {
                 withCredentials: true
@@ -71,9 +72,17 @@ const ShiftGenerate = () => {
             await fetchGeneratedShifts();
             setCurrentShift(null);
         } catch (err) {
-            console.error("Error accepting shift", err);
-            toast.error("Có lỗi xảy ra khi chấp nhận ca trực. Vui lòng thử lại sau.");
+            const msg = err.response?.data?.message ||
+                "Có lỗi xảy ra khi chấp nhận ca trực.";
+            toast.error(msg);
         }
+    };
+
+    const payload = {
+        shiftDate: selectedDate,
+        ...(mode === 'TIME'
+            ? { timeSlot: selectedTime }
+            : { block: selectedBlock })
     };
 
     return (
@@ -81,6 +90,15 @@ const ShiftGenerate = () => {
             <div className="generate-box">
                 <div className="input-section">
                     <div className="mode-toggle">
+                        <label className="date-label">
+                            Chọn ngày:&nbsp;
+                            <input
+                                type="date"
+                                value={selectedDate}
+                                min={new Date().toISOString().split('T')[0]}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                            />
+                        </label>
                         <label>
                             <input
                                 type="radio"
@@ -122,18 +140,20 @@ const ShiftGenerate = () => {
                     )}
                 </div>
                 <button onClick={handleGenerate}
-                        disabled={retries >= 3 ||
+                    disabled={retries >= 3 ||
+                        (currentShift?.accepted ?? false) ||
                         acceptedShiftToday.length > 0 ||
+                        !selectedDate ||
                         (mode === 'TIME' && !selectedTime) ||
                         (mode === 'BLOCK' && !selectedBlock)}>
                     Tạo Ca Trực
                 </button>
                 {currentShift && (
                     <div className="current-shift-box">
+                        <p><strong>Ngày:</strong> {currentShift.shiftDate}</p>
                         <p><strong>Ca:</strong> {currentShift.timeSlot}</p>
                         <p><strong>Block:</strong> {currentShift.block}</p>
-                        <p><strong>Ngày:</strong> {currentShift.shiftDate}</p>
-                        <button onClick={handleAccept} disabled={currentShift.isAccepted}>
+                        <button onClick={handleAccept} disabled={currentShift.accepted}>
                             Chấp Nhận
                         </button>
                     </div>
@@ -147,7 +167,7 @@ const ShiftGenerate = () => {
                         className={`shift-box ${currentShift?.id === shift.id ? 'selected' : ''}`}
                         onClick={() => setCurrentShift(shift)}
                         style={{ cursor: 'pointer' }}>
-                        <p>{shift.timeSlot} - {shift.block}</p>
+                        <p>{shift.shiftDate} - {shift.timeSlot} - {shift.block}</p>
                     </div>
                 ))}
             </div>

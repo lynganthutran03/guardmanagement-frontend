@@ -115,3 +115,15 @@ select:focus {
     border-color: #4caf50;
     outline: none;
 }
+
+.date-label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+input[type="date"] {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}

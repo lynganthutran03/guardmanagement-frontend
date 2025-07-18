@@ -3,6 +3,7 @@ import Login from './components/Login';
 import AppLayout from './layout/AppLayout';
 import ShiftGenerate from './pages/guard/ShiftGenerate';
 import GuardHomePage from './pages/guard/GuardHomePage';
+import MyShifts from './pages/guard/MyShifts';
 import { TitleProvider } from './context/TitleContext';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <AppLayout user={user} onLogout={() => setUser(null) } setPage={setCurrentPage}>
           {user.role === 'GUARD' && currentPage === 'home' && <GuardHomePage user={user} />}
           {user.role === 'GUARD' && currentPage === 'shift' && <ShiftGenerate user={user} />}
+          {user.role === 'GUARD' && currentPage === 'my-shifts' && <MyShifts user={user} />}
           {/* You can add more guard pages like "absenceRequest" here */}
 
           {user.role === 'MANAGER' && currentPage === 'home' && <h2>Trang Chủ Quản Lý</h2>}

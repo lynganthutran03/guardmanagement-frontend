@@ -29,7 +29,7 @@ const Sidebar = ({ user, setPage }) => {
                         </li>
                         {viewOpen && (
                             <ul className="dropdown-children">
-                                <li onClick={() => setPage('myShift')}>
+                                <li onClick={() => setPage('my-shifts')}>
                                     <i className="fa-solid fa-clock"></i>Ca Trực Của Tôi
                                 </li>
                                 <li onClick={() => setPage('absence')}>
