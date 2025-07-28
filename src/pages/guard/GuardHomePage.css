@@ -10,6 +10,15 @@
     margin-bottom: 10px;
 }
 
+.dashboard-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
 .shift-box {
     background: #fff;
     border-radius: 8px;
@@ -22,4 +31,13 @@
 
 .shift-info p {
     margin: 6px 0;
+}
+
+.calendar-box {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex: 2;
+    overflow-x: auto;
 }

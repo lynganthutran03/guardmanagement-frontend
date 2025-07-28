@@ -1,6 +1,7 @@
 import { React, useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import { TitleContext } from '../../context/TitleContext';
+import ShiftCalendar from './ShiftCalendar';
 import './GuardHomePage.css';
 
 const GuardHomePage = ({ user }) => {
@@ -20,21 +21,11 @@ const GuardHomePage = ({ user }) => {
         <div className="guard-home-page">
             <h3>Xin chào, {user.fullName}!</h3>
             <p><strong>Mã nhân viên:</strong> {user.identityNumber}</p>
-            <div className="shift-box">
-                <h4>Ca trực của bạn hôm nay:</h4>
-                {acceptedShift.length > 0 ? (
-                    <ul>
-                        {acceptedShift.map(shift => (
-                            <div className="shift-info" key={shift.id}>
-                                <p><strong>Ngày:</strong> {shift.shiftDate}</p>
-                                <p><strong>Ca trực:</strong> {shift.timeSlot}</p>
-                                <p><strong>Khu vực:</strong> {shift.block}</p>
-                            </div>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>Bạn chưa có ca trực nào được chấp nhận hôm nay.</p>
-                )}
+            <div className="dashboard-layout">
+                <div className="calendar-box">
+                    <h4>Lịch trực tháng này:</h4>
+                    <ShiftCalendar shiftData={acceptedShift} />
+                </div>
             </div>
         </div>
     );

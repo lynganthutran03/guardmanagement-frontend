@@ -1,0 +1,17 @@
+/* Optional: customize event appearance */
+.fc-event {
+    font-size: 0.9rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    border: none;
+}
+
+/* Optional: hover effect */
+.fc-event:hover {
+    opacity: 0.8;
+}
+
+/* Optional: make the calendar a bit more compact */
+.fc .fc-daygrid-day-frame {
+    padding: 6px;
+}
