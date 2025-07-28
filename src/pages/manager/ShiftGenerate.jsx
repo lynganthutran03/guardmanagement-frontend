@@ -11,84 +11,70 @@ const ShiftGenerate = () => {
     const { setTitle } = useContext(TitleContext);
     const [shifts, setShifts] = useState([]);
     const [currentShift, setCurrentShift] = useState(null);
-    const [retries, setRetries] = useState(0);
     const [mode, setMode] = useState('TIME');
+    const [employeeId, setEmployeeId] = useState('');
+    const [employees, setEmployees] = useState([]);
     const [selectedTime, setSelectedTime] = useState('');
     const [selectedBlock, setSelectedBlock] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-    const [acceptedShiftToday, setAcceptedShiftToday] = useState([]);
 
     useEffect(() => {
         setTitle('Tạo Lịch Làm Việc');
     }, [setTitle]);
 
     useEffect(() => {
-        fetchGeneratedShifts();
-    }, [selectedDate]);
+        if (employeeId) fetchGeneratedShifts();
+    }, [selectedDate, employeeId]);
+
+    useEffect(() => {
+        axios.get("http://localhost:8080/api/employees")
+            .then(res => setEmployees(res.data))
+            .catch(() => toast.error("Không thể tải danh sách nhân viên."));
+    }, []);
 
     const fetchGeneratedShifts = async () => {
         try {
-            const res = await axios.get('http://localhost:8080/api/shifts?date=${selectedDate}', {
-                withCredentials: true
-            });
+            const res = await axios.get(`http://localhost:8080/api/manager/shifts?date=${selectedDate}&employeeId=${employeeId}`);
             setShifts(res.data);
-            setRetries(res.data.length);
-            setAcceptedShiftToday(res.data.filter(s => s.accepted));
-            return res.data;
         } catch (err) {
-            console.error("Error loading generated shifts", err);
-            const status = err.response?.status;
-            if (status && status !== 404) {
-                toast.error("Không thể tải danh sách ca trực. Vui lòng thử lại sau.");
-            }
+            console.error("Error loading shifts", err);
             setShifts([]);
-            setRetries(0);
-            return [];
+            toast.error("Không thể tải ca trực.");
         }
     };
 
     const handleGenerate = async () => {
+        const payload = {
+            employeeId,
+            shiftDate: selectedDate,
+            ...(mode === 'TIME'
+                ? { timeSlot: selectedTime }
+                : { block: selectedBlock })
+        };
+
         try {
-            const res = await axios.post('http://localhost:8080/api/shifts/generate', payload, {
-                withCredentials: true
-            });
+            const res = await axios.post('http://localhost:8080/api/manager/shifts', payload);
             setCurrentShift(res.data);
             fetchGeneratedShifts();
-            setRetries(prev => prev + 1);
         } catch (err) {
-            console.error("Error generating shift", err);
-            const message = err.response?.data?.message || "Có lỗi xảy ra khi tạo ca trực. Vui lòng thử lại sau.";
+            const message = err.response?.data?.message || "Lỗi khi tạo ca trực.";
             toast.error(message);
         }
-    };
-
-    const handleAccept = async () => {
-        if (!currentShift) return;
-        try {
-            await axios.post(`http://localhost:8080/api/shifts/${currentShift.id}/accept`, {}, {
-                withCredentials: true
-            });
-            toast.success("Hệ thống đã chấp nhận ca trực!");
-            await fetchGeneratedShifts();
-            setCurrentShift(null);
-        } catch (err) {
-            const msg = err.response?.data?.message ||
-                "Có lỗi xảy ra khi chấp nhận ca trực.";
-            toast.error(msg);
-        }
-    };
-
-    const payload = {
-        shiftDate: selectedDate,
-        ...(mode === 'TIME'
-            ? { timeSlot: selectedTime }
-            : { block: selectedBlock })
     };
 
     return (
         <div className="shift-generate-page">
             <div className="generate-box">
                 <div className="input-section">
+                    <select value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} required>
+                        <option value="">-- Chọn bảo vệ --</option>
+                        {employees.map(emp => (
+                            <option key={emp.id} value={emp.id}>
+                                {emp.fullName} - {emp.identityNumber}
+                            </option>
+                        ))}
+                    </select>
+
                     <div className="mode-toggle">
                         <label className="date-label">
                             Chọn ngày:&nbsp;
@@ -99,6 +85,7 @@ const ShiftGenerate = () => {
                                 onChange={(e) => setSelectedDate(e.target.value)}
                             />
                         </label>
+
                         <label>
                             <input
                                 type="radio"
@@ -139,38 +126,41 @@ const ShiftGenerate = () => {
                         </select>
                     )}
                 </div>
-                <button onClick={handleGenerate}
-                    disabled={retries >= 3 ||
-                        (currentShift?.accepted ?? false) ||
-                        acceptedShiftToday.length > 0 ||
+
+                <button
+                    onClick={handleGenerate}
+                    disabled={
+                        !employeeId ||
                         !selectedDate ||
                         (mode === 'TIME' && !selectedTime) ||
-                        (mode === 'BLOCK' && !selectedBlock)}>
+                        (mode === 'BLOCK' && !selectedBlock)
+                    }>
                     Tạo Ca Trực
                 </button>
+
                 {currentShift && (
                     <div className="current-shift-box">
                         <p><strong>Ngày:</strong> {currentShift.shiftDate}</p>
                         <p><strong>Ca:</strong> {currentShift.timeSlot}</p>
                         <p><strong>Block:</strong> {currentShift.block}</p>
-                        <button onClick={handleAccept} disabled={currentShift.accepted}>
-                            Chấp Nhận
-                        </button>
                     </div>
                 )}
             </div>
 
-            <div className="previous-shifts">
-                <h3>Danh Sách Ca Trực Đã Tạo</h3>
-                {shifts.map((shift, idx) => (
-                    <div key={idx}
-                        className={`shift-box ${currentShift?.id === shift.id ? 'selected' : ''}`}
-                        onClick={() => setCurrentShift(shift)}
-                        style={{ cursor: 'pointer' }}>
-                        <p>{shift.shiftDate} - {shift.timeSlot} - {shift.block}</p>
-                    </div>
-                ))}
-            </div>
+            {shifts.length > 0 && (
+                <div className="previous-shifts">
+                    <h3>Ca Trực Đã Tạo Cho Nhân Viên</h3>
+                    {shifts.map((shift, idx) => (
+                        <div key={idx}
+                            className={`shift-box ${currentShift?.id === shift.id ? 'selected' : ''}`}
+                            onClick={() => setCurrentShift(shift)}
+                            style={{ cursor: 'pointer' }}>
+                            <p>{shift.shiftDate} - {shift.timeSlot} - {shift.block}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
+
             <ToastContainer position="top-right" autoClose={3000} />
         </div>
     );

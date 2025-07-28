@@ -17,8 +17,8 @@ const Sidebar = ({ user, setPage }) => {
                         <li onClick={() => setPage('home')}>
                             <i className="fa-solid fa-chart-simple"></i>Trang Chủ
                         </li>
-                        <li onClick={() => setPage('shift')}>
-                            <i className="fa-solid fa-calendar-plus"></i>Tạo Lịch Làm Việc
+                        <li onClick={() => setPage('monitor')}>
+                            <i className="fa-solid fa-calendar-days"></i>Ca Trực Hôm Nay
                         </li>
                         <li onClick={() => setPage('request')}>
                             <i className="fa-solid fa-envelope-open-text"></i>Yêu Cầu Nghỉ Phép
@@ -43,8 +43,8 @@ const Sidebar = ({ user, setPage }) => {
                         <li onClick={() => setPage('home')}>
                             <i className="fa-solid fa-chart-simple"></i>Trang Chủ
                         </li>
-                        <li onClick={() => setPage('monitor')}>
-                            <i className="fa-solid fa-calendar-days"></i>Ca Trực Hôm Nay
+                        <li onClick={() => setPage('shift')}>
+                            <i className="fa-solid fa-calendar-plus"></i>Tạo Lịch Làm Việc
                         </li>
                         <li onClick={() => setPage('approval')}>
                             <i className="fa-solid fa-inbox"></i>Duyệt Nghỉ Phép
