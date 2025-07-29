@@ -12,6 +12,16 @@ const GuardHomePage = ({ user }) => {
         setTitle('Trang Chủ Bảo Vệ');
     }, [setTitle]);
 
+    useEffect(() => {
+        axios.get("http://localhost:8080/api/shifts/calendar", { withCredentials: true })
+            .then((res) => {
+                setAcceptedShift(res.data);
+            })
+            .catch((err) => {
+                console.error("Error fetching shift data:", err);
+            });
+    }, []);
+
     return (
         <div className="guard-home-page">
             <h3>Xin chào, {user.fullName}!</h3>
