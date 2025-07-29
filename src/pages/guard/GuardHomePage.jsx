@@ -10,11 +10,6 @@ const GuardHomePage = ({ user }) => {
 
     useEffect(() => {
         setTitle('Trang Chủ Bảo Vệ');
-        axios.get("http://localhost:8080/api/shifts/accepted-today", {
-            withCredentials: true
-        })
-            .then(res => setAcceptedShift(res.data))
-            .catch(() => setAcceptedShift([]));
     }, [setTitle]);
 
     return (

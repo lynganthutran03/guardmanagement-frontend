@@ -17,7 +17,7 @@ const Sidebar = ({ user, setPage }) => {
                         <li onClick={() => setPage('home')}>
                             <i className="fa-solid fa-chart-simple"></i>Trang Chủ
                         </li>
-                        <li onClick={() => setPage('monitor')}>
+                        <li onClick={() => setPage('today-shift')}>
                             <i className="fa-solid fa-calendar-days"></i>Ca Trực Hôm Nay
                         </li>
                         <li onClick={() => setPage('request')}>
@@ -43,7 +43,7 @@ const Sidebar = ({ user, setPage }) => {
                         <li onClick={() => setPage('home')}>
                             <i className="fa-solid fa-chart-simple"></i>Trang Chủ
                         </li>
-                        <li onClick={() => setPage('shift')}>
+                        <li onClick={() => setPage('generate-shift')}>
                             <i className="fa-solid fa-calendar-plus"></i>Tạo Lịch Làm Việc
                         </li>
                         <li onClick={() => setPage('approval')}>

@@ -14,6 +14,7 @@ const ShiftCalendar = ({ shiftData }) => {
         );
     }
 
+    console.log("Shift data going to FullCalendar:", shiftData);
     return (
         <FullCalendar
             plugins={[dayGridPlugin, interactionPlugin]}

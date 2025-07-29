@@ -32,17 +32,6 @@ const ShiftGenerate = () => {
             .catch(() => toast.error("Không thể tải danh sách nhân viên."));
     }, []);
 
-    const fetchGeneratedShifts = async () => {
-        try {
-            const res = await axios.get(`http://localhost:8080/api/manager/shifts?date=${selectedDate}&employeeId=${employeeId}`);
-            setShifts(res.data);
-        } catch (err) {
-            console.error("Error loading shifts", err);
-            setShifts([]);
-            toast.error("Không thể tải ca trực.");
-        }
-    };
-
     const handleGenerate = async () => {
         const payload = {
             employeeId,
@@ -59,6 +48,17 @@ const ShiftGenerate = () => {
         } catch (err) {
             const message = err.response?.data?.message || "Lỗi khi tạo ca trực.";
             toast.error(message);
+        }
+    };
+
+    const fetchGeneratedShifts = async () => {
+        try {
+            const res = await axios.get(`http://localhost:8080/api/manager/shifts?date=${selectedDate}&employeeId=${employeeId}`);
+            setShifts(res.data);
+        } catch (err) {
+            console.error("Error loading shifts", err);
+            setShifts([]);
+            toast.error("Không thể tải ca trực.");
         }
     };
 
@@ -139,11 +139,23 @@ const ShiftGenerate = () => {
                 </button>
 
                 {currentShift && (
-                    <div className="current-shift-box">
-                        <p><strong>Ngày:</strong> {currentShift.shiftDate}</p>
-                        <p><strong>Ca:</strong> {currentShift.timeSlot}</p>
-                        <p><strong>Block:</strong> {currentShift.block}</p>
-                    </div>
+                    <>
+                        <div className="current-shift-box">
+                            <p><strong>Ngày:</strong> {currentShift.shiftDate}</p>
+                            <p><strong>Ca:</strong> {currentShift.timeSlot}</p>
+                            <p><strong>Block:</strong> {currentShift.block}</p>
+                        </div>
+                        <button
+                            className="accept-button"
+                            onClick={() => {
+                                toast.success("Đã gửi ca trực cho bảo vệ!");
+                                // Optionally disable generate buttons here
+                            }}
+                        >
+                            Chấp Nhận
+                        </button>
+                    </>
+
                 )}
             </div>
 
