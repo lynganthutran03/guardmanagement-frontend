@@ -15,12 +15,14 @@ const GuardHomePage = ({ user }) => {
     useEffect(() => {
         axios.get("http://localhost:8080/api/shifts/calendar", { withCredentials: true })
             .then((res) => {
-                setAcceptedShift(res.data);
+                const onlyAccepted = res.data.filter(shift => shift.employeeId !== null);
+                setAcceptedShift(onlyAccepted);
             })
             .catch((err) => {
                 console.error("Error fetching shift data:", err);
             });
     }, []);
+
 
     return (
         <div className="guard-home-page">

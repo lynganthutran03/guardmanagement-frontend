@@ -27,6 +27,10 @@ const ShiftGenerate = () => {
     }, [selectedDate, employeeId]);
 
     useEffect(() => {
+        setCurrentShift(null);
+    }, [selectedDate, employeeId]);
+
+    useEffect(() => {
         axios.get("http://localhost:8080/api/employees")
             .then(res => setEmployees(res.data))
             .catch(() => toast.error("Không thể tải danh sách nhân viên."));
@@ -43,7 +47,8 @@ const ShiftGenerate = () => {
 
         try {
             const res = await axios.post('http://localhost:8080/api/manager/shifts', payload);
-            setCurrentShift(res.data);
+            res.data.employeeId = employeeId;
+            setCurrentShift({ ...res.data, employeeId });
             fetchGeneratedShifts();
         } catch (err) {
             const message = err.response?.data?.message || "Lỗi khi tạo ca trực.";
@@ -60,6 +65,17 @@ const ShiftGenerate = () => {
             setShifts([]);
             toast.error("Không thể tải ca trực.");
         }
+    };
+
+    const hasShiftForDate = (date) => {
+        const existsInFetched = shifts.some(
+            shift => shift.shiftDate === date && shift.employeeId === employeeId
+        );
+        const isInCurrent = currentShift &&
+            currentShift.shiftDate === date &&
+            currentShift.employeeId === employeeId;
+
+        return existsInFetched || isInCurrent;
     };
 
     return (
@@ -133,7 +149,8 @@ const ShiftGenerate = () => {
                         !employeeId ||
                         !selectedDate ||
                         (mode === 'TIME' && !selectedTime) ||
-                        (mode === 'BLOCK' && !selectedBlock)
+                        (mode === 'BLOCK' && !selectedBlock) ||
+                        hasShiftForDate(selectedDate)
                     }>
                     Tạo Ca Trực
                 </button>
@@ -147,10 +164,19 @@ const ShiftGenerate = () => {
                         </div>
                         <button
                             className="accept-button"
-                            onClick={() => {
-                                toast.success("Đã gửi ca trực cho bảo vệ!");
-                                // Optionally disable generate buttons here
+                            onClick={async () => {
+                                try {
+                                    await axios.patch(`http://localhost:8080/api/manager/shifts/${currentShift.id}/assign`, {
+                                        employeeId
+                                    });
+                                    toast.success("Đã gửi ca trực cho bảo vệ!");
+                                    setCurrentShift(null);
+                                    fetchGeneratedShifts();
+                                } catch {
+                                    toast.error("Lỗi khi gửi ca trực.");
+                                }
                             }}
+                            disabled={!currentShift || hasShiftForDate(selectedDate) || currentShift.employeeId}
                         >
                             Chấp Nhận
                         </button>
