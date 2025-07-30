@@ -1,6 +1,7 @@
 import { React, useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import { TitleContext } from '../../context/TitleContext';
+import { toast } from 'react-toastify';
 import './TodayShift.css';
 
 const TodayShift = ({ }) => {
@@ -9,13 +10,15 @@ const TodayShift = ({ }) => {
 
     useEffect(() => {
         setTitle('Lịch Trực Hôm Nay');
-        axios.get("http://localhost:8080/api/shifts/accepted-today", {
-            withCredentials: true
-        })
+        axios.get("http://localhost:8080/api/shifts/accepted-today", { withCredentials: true })
             .then(res => setAcceptedShift(res.data))
-            .catch((err) => {
-                console.error("Failed to fetch today's shift:", err);
-                setAcceptedShift(null);
+            .catch(err => {
+                if (err.response?.status === 404) {
+                    console.log("No shift today.");
+                    setAcceptedShift(null);
+                } else {
+                    toast.error("Lỗi khi tải ca trực hôm nay.");
+                }
             });
     }, [setTitle]);
 

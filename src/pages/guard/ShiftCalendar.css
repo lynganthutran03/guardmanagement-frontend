@@ -30,3 +30,17 @@
     color: #0d47a1;
     font-size: 14px;
 }
+
+.fc-tooltip {
+    background-color: #333;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    position: absolute;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}

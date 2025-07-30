@@ -17,6 +17,7 @@ const ShiftGenerate = () => {
     const [selectedTime, setSelectedTime] = useState('');
     const [selectedBlock, setSelectedBlock] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [hasAccepted, setHasAccepted] = useState(false);
 
     useEffect(() => {
         setTitle('Tạo Lịch Làm Việc');
@@ -36,25 +37,29 @@ const ShiftGenerate = () => {
             .catch(() => toast.error("Không thể tải danh sách nhân viên."));
     }, []);
 
+    const hasAssignedToday = shifts.some(s => s.employeeId);
+
     const handleGenerate = async () => {
+        if (shifts.length >= 3) {
+            toast.info("Đã tạo tối đa 3 ca trực.");
+            return;
+        }
+
         const payload = {
-            employeeId,
             shiftDate: selectedDate,
-            ...(mode === 'TIME'
-                ? { timeSlot: selectedTime }
-                : { block: selectedBlock })
+            ...(mode === 'TIME' ? { timeSlot: selectedTime } : { block: selectedBlock })
         };
 
         try {
             const res = await axios.post('http://localhost:8080/api/manager/shifts', payload);
-            res.data.employeeId = employeeId;
-            setCurrentShift({ ...res.data, employeeId });
-            fetchGeneratedShifts();
+            setShifts(prev => [...prev, res.data]);
+            setCurrentShift(res.data);
         } catch (err) {
             const message = err.response?.data?.message || "Lỗi khi tạo ca trực.";
             toast.error(message);
         }
     };
+
 
     const fetchGeneratedShifts = async () => {
         try {
@@ -65,17 +70,6 @@ const ShiftGenerate = () => {
             setShifts([]);
             toast.error("Không thể tải ca trực.");
         }
-    };
-
-    const hasShiftForDate = (date) => {
-        const existsInFetched = shifts.some(
-            shift => shift.shiftDate === date && shift.employeeId === employeeId
-        );
-        const isInCurrent = currentShift &&
-            currentShift.shiftDate === date &&
-            currentShift.employeeId === employeeId;
-
-        return existsInFetched || isInCurrent;
     };
 
     return (
@@ -150,7 +144,8 @@ const ShiftGenerate = () => {
                         !selectedDate ||
                         (mode === 'TIME' && !selectedTime) ||
                         (mode === 'BLOCK' && !selectedBlock) ||
-                        hasShiftForDate(selectedDate)
+                        shifts.length >= 3 ||
+                        hasAssignedToday
                     }>
                     Tạo Ca Trực
                 </button>
@@ -166,22 +161,23 @@ const ShiftGenerate = () => {
                             className="accept-button"
                             onClick={async () => {
                                 try {
-                                    await axios.patch(`http://localhost:8080/api/manager/shifts/${currentShift.id}/assign`, {
+                                    await axios.post("http://localhost:8080/api/manager/shifts/assign", {
+                                        shiftId: currentShift.id,
                                         employeeId
                                     });
+
                                     toast.success("Đã gửi ca trực cho bảo vệ!");
+                                    await fetchGeneratedShifts();
                                     setCurrentShift(null);
-                                    fetchGeneratedShifts();
                                 } catch {
                                     toast.error("Lỗi khi gửi ca trực.");
                                 }
                             }}
-                            disabled={!currentShift || hasShiftForDate(selectedDate) || currentShift.employeeId}
+                            disabled={!currentShift || hasAssignedToday}
                         >
                             Chấp Nhận
                         </button>
                     </>
-
                 )}
             </div>
 

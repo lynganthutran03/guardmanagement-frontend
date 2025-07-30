@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import Login from './components/Login';
 import AppLayout from './layout/AppLayout';
-import ShiftGenerate from './pages/manager/ShiftGenerate';
 import GuardHomePage from './pages/guard/GuardHomePage';
 import TodayShift from './pages/guard/TodayShift';
+import AbsenceRequestForm from './pages/guard/AbsenceRequestForm';
 import MyShifts from './pages/guard/MyShifts';
+import ShiftGenerate from './pages/manager/ShiftGenerate';
+import LeaveRequestCheck from './pages/manager/LeaveRequestCheck';
 import { TitleProvider } from './context/TitleContext';
+import ShiftReassign from './pages/manager/ShiftReassign';
+import ManagerHomePage from './pages/manager/ManagerHomePage';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -17,15 +21,15 @@ function App() {
         <Login onLoginSuccess={setUser} />
       ) : (
         <AppLayout user={user} onLogout={() => setUser(null) } setPage={setCurrentPage}>
-          {user.role === 'GUARD' && currentPage === 'home' && <GuardHomePage user={user} />}
+          {user.role === 'GUARD' && currentPage === 'guard-home' && <GuardHomePage user={user} />}
           {user.role === 'GUARD' && currentPage === 'today-shift' && <TodayShift user={user} />}
+          {user.role === 'GUARD' && currentPage === 'request' && <AbsenceRequestForm user={user} />}
           {user.role === 'GUARD' && currentPage === 'my-shifts' && <MyShifts user={user} />}
-          {/* You can add more guard pages like "absenceRequest" here */}
 
-          {user.role === 'MANAGER' && currentPage === 'home' && <h2>Trang Chủ Quản Lý</h2>}
+          {user.role === 'MANAGER' && currentPage === 'manager-home' && <ManagerHomePage user={user} />}
           {user.role === 'MANAGER' && currentPage === 'generate-shift' && <ShiftGenerate user={user} />}
-          {user.role === 'MANAGER' && currentPage === 'monitor' && <h2>Theo Dõi Ca Trực</h2>}
-          {user.role === 'MANAGER' && currentPage === 'approval' && <h2>Duyệt Nghỉ Phép</h2>}
+          {user.role === 'MANAGER' && currentPage === 'approval' && <LeaveRequestCheck user={user} />}
+          {user.role === 'MANAGER' && currentPage === 'rearrange' && <ShiftReassign user={user} />}
         </AppLayout>
       )}
     </TitleProvider>

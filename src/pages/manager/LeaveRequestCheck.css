@@ -1,0 +1,55 @@
+.leave-grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 30px;
+}
+
+.leave-card {
+    background: #fefefe;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 20px;
+    transition: transform 0.2s ease;
+}
+
+.leave-card:hover {
+    transform: translateY(-5px);
+}
+
+.leave-card p {
+    margin: 8px 0;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.accept {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.reject {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.accept:hover {
+    background-color: #45a049;
+}
+
+.reject:hover {
+    background-color: #d32f2f;
+}

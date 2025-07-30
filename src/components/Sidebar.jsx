@@ -14,7 +14,7 @@ const Sidebar = ({ user, setPage }) => {
             <ul>
                 {user?.role?.toUpperCase() === 'GUARD' ? (
                     <>
-                        <li onClick={() => setPage('home')}>
+                        <li onClick={() => setPage('guard-home')}>
                             <i className="fa-solid fa-chart-simple"></i>Trang Chủ
                         </li>
                         <li onClick={() => setPage('today-shift')}>
@@ -40,7 +40,7 @@ const Sidebar = ({ user, setPage }) => {
                     </>
                 ) : (
                     <>
-                        <li onClick={() => setPage('home')}>
+                        <li onClick={() => setPage('manager-home')}>
                             <i className="fa-solid fa-chart-simple"></i>Trang Chủ
                         </li>
                         <li onClick={() => setPage('generate-shift')}>

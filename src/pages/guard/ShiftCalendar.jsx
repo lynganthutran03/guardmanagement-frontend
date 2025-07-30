@@ -2,17 +2,61 @@ import React from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import './ShiftCalendar.css'; // Keep your styles if needed
+import './ShiftCalendar.css';
 
 const ShiftCalendar = ({ shiftData }) => {
-    function renderEventContent(eventInfo) {
+    const getTimeRange = (slot) => {
+        switch (slot) {
+            case "MORNING": return "07:30 - 11:30";
+            case "AFTERNOON": return "11:30 - 15:30";
+            case "EVENING": return "15:30 - 19:30";
+            default: return "";
+        }
+    };
+
+    const renderEventContent = (eventInfo) => {
         return (
-            <div style={{ fontSize: "12px", padding: "2px" }}>
+            <div className="fc-event-inner">
                 <b>{eventInfo.timeText}</b>
                 <i>{eventInfo.event.extendedProps.block}</i>
             </div>
         );
-    }
+    };
+
+    const handleEventMount = (info) => {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'fc-tooltip';
+        tooltip.innerHTML = `
+        <strong>Ca:</strong> ${info.event.extendedProps.timeSlot}<br/>
+        <strong>Giờ:</strong> ${getTimeRange(info.event.extendedProps.timeSlot)}<br/>
+        <strong>Block:</strong> ${info.event.extendedProps.block}
+    `;
+
+        document.body.appendChild(tooltip);
+
+        const showTooltip = (e) => {
+            tooltip.style.display = 'block';
+            tooltip.style.position = 'absolute';
+            tooltip.style.left = e.pageX + 10 + 'px';
+            tooltip.style.top = e.pageY + 10 + 'px';
+        };
+
+        const moveTooltip = (e) => {
+            tooltip.style.left = e.pageX + 10 + 'px';
+            tooltip.style.top = e.pageY + 10 + 'px';
+        };
+
+        const hideTooltip = () => {
+            tooltip.style.display = 'none';
+        };
+
+        info.el.addEventListener('mouseenter', showTooltip);
+        info.el.addEventListener('mousemove', moveTooltip);
+        info.el.addEventListener('mouseleave', hideTooltip);
+
+        // Clean up if needed
+        info.el._tooltipListeners = { showTooltip, moveTooltip, hideTooltip };
+    };
 
     return (
         <FullCalendar
@@ -35,6 +79,7 @@ const ShiftCalendar = ({ shiftData }) => {
                 }
             }))}
             eventContent={renderEventContent}
+            eventDidMount={handleEventMount}
         />
     );
 };

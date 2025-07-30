@@ -1,0 +1,56 @@
+.reassign-container {
+    padding: 30px;
+    max-width: 600px;
+    margin: auto;
+}
+
+.leave-shift-box {
+    background: #fff7e6;
+    border-left: 5px solid #f59e0b;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.reassign-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.reassign-form label {
+    font-weight: bold;
+}
+
+.reassign-form select,
+.reassign-form input {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.reassign-form button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.reassign-form button:hover {
+    background-color: #3f9e44;
+}
+
+.guard-shift-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
