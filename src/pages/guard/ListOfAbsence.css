@@ -1,0 +1,46 @@
+.absence-list-container {
+  padding: 20px;
+  background-color: #f9fafc;
+}
+
+.absence-title {
+  font-size: 20px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.absence-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.absence-table th,
+.absence-table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.status-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.status-tag.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-tag.approved {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-tag.denied {
+  background-color: #f8d7da;
+  color: #721c24;
+}

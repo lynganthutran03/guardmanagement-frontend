@@ -47,3 +47,51 @@
 .logout-btn:hover {
     background-color: #e60000;
 }
+
+.notif-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.notif-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    width: 380px;
+    padding: 10px;
+    font-size: 14px;
+    z-index: 100;
+}
+
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.notif-item:hover {
+    background-color: #f5f5f5;
+}
+
+.notif-icon-line {
+    margin-top: 2px;
+    font-size: 16px;
+}
+
+.notif-dropdown span {
+    line-height: 1.4;
+}
+
+.notif-dropdown strong {
+    font-weight: bold;
+}
