@@ -13,6 +13,8 @@ import ShiftGenerate from './pages/manager/ShiftGenerate';
 import LeaveRequestCheck from './pages/manager/LeaveRequestCheck';
 import ShiftReassign from './pages/manager/ShiftReassign';
 import ManagerHomePage from './pages/manager/ManagerHomePage';
+import AbsenceStats from './pages/manager/AbsenceStats';
+import ShiftHistory from './pages/manager/ShiftHistory';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -43,6 +45,8 @@ function App() {
           {user.role === 'MANAGER' && currentPage === 'generate-shift' && <ShiftGenerate user={user} />}
           {user.role === 'MANAGER' && currentPage === 'approval' && <LeaveRequestCheck user={user} />}
           {user.role === 'MANAGER' && currentPage === 'rearrange' && <ShiftReassign user={user} />}
+          {user.role === 'MANAGER' && currentPage === 'absence-history' && <AbsenceStats user={user}/>}
+          {user.role === 'MANAGER' && currentPage === 'shift-history' && <ShiftHistory user={user} />}
         </AppLayout>
       )}
     </TitleProvider>

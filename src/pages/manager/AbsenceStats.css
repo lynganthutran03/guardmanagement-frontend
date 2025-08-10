@@ -1,0 +1,26 @@
+.absence-page {
+  padding: 20px;
+}
+
+.absence-table {
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.absence-header,
+.absence-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  padding: 12px 16px;
+}
+
+.absence-header {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.absence-row:nth-child(even) {
+  background-color: #fafafa;
+}

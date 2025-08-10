@@ -58,10 +58,10 @@ const Sidebar = ({ user, setPage }) => {
                         </li>
                         {viewOpen && (
                             <ul className="dropdown-children">
-                                <li onClick={() => setPage('absenceHistory')}>
+                                <li onClick={() => setPage('absence-history')}>
                                     <i className="fa-solid fa-user-clock"></i>Thống Kê Buổi Vắng
                                 </li>
-                                <li onClick={() => setPage('shiftHistory')}>
+                                <li onClick={() => setPage('shift-history')}>
                                     <i className="fa-solid fa-clock-rotate-left"></i>Lịch Sử Ca Trực
                                 </li>
                             </ul>
