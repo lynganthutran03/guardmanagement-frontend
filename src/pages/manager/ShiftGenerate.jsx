@@ -181,19 +181,21 @@ const ShiftGenerate = () => {
                 )}
             </div>
 
-            {shifts.length > 0 && (
-                <div className="previous-shifts">
-                    <h3>Ca Trực Đã Tạo Cho Nhân Viên</h3>
-                    {shifts.map((shift, idx) => (
+            <div className="previous-shifts">
+                <h3>Ca Trực Đã Tạo Cho Nhân Viên</h3>
+                {shifts.length > 0 ? (
+                    shifts.map((shift, idx) => (
                         <div key={idx}
                             className={`shift-box ${currentShift?.id === shift.id ? 'selected' : ''}`}
                             onClick={() => setCurrentShift(shift)}
                             style={{ cursor: 'pointer' }}>
                             <p>{shift.shiftDate} - {shift.timeSlot} - {shift.block}</p>
                         </div>
-                    ))}
-                </div>
-            )}
+                    ))
+                ) : (
+                    <p className="no-shift-placeholder">Chưa có ca trực nào được tạo.</p>
+                )}
+            </div>
 
             <ToastContainer position="top-right" autoClose={3000} />
         </div>

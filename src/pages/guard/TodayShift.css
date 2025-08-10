@@ -1,13 +1,94 @@
-.shift-box {
-    background: #fff;
-    border-radius: 8px;
-    padding: 16px;
-    margin-right: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    flex: 1;
-    min-width: 250px;
+.shift-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+    background: #f9fafb;
 }
 
-.shift-info p {
-    margin: 6px 0;
+.shift-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 20px 28px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    font-family: 'Inter', sans-serif;
+}
+
+.shift-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.shift-header h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.date-picker {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.95rem;
+}
+
+.date-picker label {
+    flex: 0 0 120px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.date-picker input[type="date"] {
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.date-picker input[type="date"]:hover {
+    border-color: #4f46e5;
+}
+
+.shift-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.shift-detail {
+    display: flex;
+    align-items: center;
+    background: #f9fafb;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 1rem;
+    gap: 10px;
+    transition: background 0.2s ease;
+}
+
+.shift-detail:hover {
+    background: #f3f4f6;
+}
+
+.shift-detail i {
+    font-size: 1.3rem;
+    color: #4f46e5;
+}
+
+.no-shift {
+    text-align: center;
+    padding: 25px;
+    color: #6b7280;
+}
+
+.no-shift i {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+    color: #9ca3af;
 }

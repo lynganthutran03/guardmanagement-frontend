@@ -1,56 +1,95 @@
 .reassign-container {
     padding: 30px;
-    max-width: 600px;
+    max-width: 1100px;
     margin: auto;
 }
 
-.leave-shift-box {
+.shift-swap-panel {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.shift-card {
+    flex: 1;
+    min-width: 400px;
+    padding: 25px;
+    border-radius: 10px;
+    background: #f9fafb;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.absent-card {
     background: #fff7e6;
     border-left: 5px solid #f59e0b;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
 }
 
-.reassign-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    background: #f9fafb;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+.replacement-card {
+    border-left: 5px solid #3b82f6;
 }
 
-.reassign-form label {
+.swap-icon {
+    font-size: 1.5rem;
+    align-self: center;
+    color: #6b7280;
+}
+
+.shift-card label {
     font-weight: bold;
+    margin-top: 10px;
+    display: block;
 }
 
-.reassign-form select,
-.reassign-form input {
+.shift-card select,
+.shift-card input {
+    width: 100%;
     padding: 8px;
     border-radius: 6px;
     border: 1px solid #ccc;
+    margin-top: 5px;
 }
 
-.reassign-form button {
-    background-color: #4caf50;
-    color: white;
+.guard-shift-info {
+    margin-top: 15px;
     padding: 10px;
+    background: #eef2ff;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+}
+
+.no-shift {
+    margin-top: 15px;
+    color: #dc2626;
+    font-weight: bold;
+}
+
+.swap-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.cancel-btn {
+    background: #e5e7eb;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.confirm-btn {
+    background: #4caf50;
+    color: white;
+    padding: 10px 15px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
 }
 
-.reassign-form button:hover {
-    background-color: #3f9e44;
-}
-
-.guard-shift-info {
-  margin-top: 1rem;
-  padding: 1rem;
-  background-color: #f2f2f2;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+.confirm-btn:hover {
+    background: #3f9e44;
 }
