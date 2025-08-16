@@ -4,81 +4,99 @@ import { TitleContext } from '../../context/TitleContext';
 import { toast } from 'react-toastify';
 import './TodayShift.css';
 
-// Temporary mock shifts for testing date selection
-const mockShifts = [
-    { shiftDate: '2025-08-09', timeSlot: '07:30 - 11:30', block: 'Block 3' },
-    { shiftDate: '2025-08-10', timeSlot: '11:30 - 15:30', block: 'Block 5' },
-    { shiftDate: '2025-08-11', timeSlot: '15:30 - 19:30', block: 'Block 8' }
-];
+const timeSlotMap = {
+    MORNING: "07:30 - 11:30",
+    AFTERNOON: "11:30 - 15:30",
+    EVENING: "15:30 - 19:30"
+};
+
+const blockMap = {
+    BLOCK_3: "Block 3",
+    BLOCK_4: "Block 4",
+    BLOCK_5: "Block 5",
+    BLOCK_6: "Block 6",
+    BLOCK_8: "Block 8",
+    BLOCK_10: "Block 10",
+    BLOCK_11: "Block 11"
+};
 
 const TodayShift = () => {
     const { setTitle } = useContext(TitleContext);
     const [acceptedShift, setAcceptedShift] = useState(null);
     const [selectedDate, setSelectedDate] = useState('');
 
-    useEffect(() => {
-        setTitle('Lịch Trực Hôm Nay');
+    const fetchShift = (date) => {
+        const url = date
+            ? `http://localhost:8080/api/shifts?date=${date}`
+            : "http://localhost:8080/api/shifts/accepted-today";
 
-        // Only call backend if no date is chosen (default behaviour)
-        if (!selectedDate) {
-            axios.get("http://localhost:8080/api/shifts/accepted-today", { withCredentials: true })
-                .then(res => setAcceptedShift(res.data))
-                .catch(err => {
-                    if (err.response?.status === 404) {
-                        console.log("No shift today.");
-                        setAcceptedShift(null);
-                    } else {
-                        toast.error("Lỗi khi tải ca trực hôm nay.");
-                    }
-                });
-        }
-    }, [setTitle, selectedDate]);
+        axios.get(url, { withCredentials: true })
+            .then(res => {
+                let shiftData;
+                if (Array.isArray(res.data)) {
+                    shiftData = res.data.length > 0 ? res.data[0] : null;
+                } else {
+                    shiftData = res.data;
+                }
 
-    // Handle date selection for mock mode
-    const handleDateChange = (e) => {
-        const date = e.target.value;
-        setSelectedDate(date);
-
-        if (date) {
-            const foundShift = mockShifts.find(shift => shift.shiftDate === date);
-            setAcceptedShift(foundShift || null);
-        } else {
-            setAcceptedShift(null);
-        }
+                if (shiftData) {
+                    setAcceptedShift({
+                        shiftDate: shiftData.shiftDate,
+                        timeSlot: timeSlotMap[shiftData.timeSlot] || shiftData.timeSlot,
+                        block: blockMap[shiftData.block] || shiftData.block
+                    });
+                } else {
+                    setAcceptedShift(null);
+                }
+            })
+            .catch(err => {
+                if (err.response?.status === 404) {
+                    setAcceptedShift(null);
+                } else {
+                    toast.error("Lỗi khi tải ca trực.");
+                }
+            });
     };
+
+    useEffect(() => {
+        setTitle('Lịch Trực');
+        fetchShift(selectedDate);
+    }, [setTitle, selectedDate]);
 
     return (
         <div className="shift-container">
-            <div className="shift-card">
-                <div className="shift-header">
-                    <h4>Ca trực của bạn</h4>
+            <div className="shift-header">
+                {/* Flex container for date picker and time */}
+                <div className="date-time-row">
                     <div className="date-picker">
                         <label>Chọn ngày:</label>
-                        <input type="date" value={selectedDate} onChange={handleDateChange} />
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                        />
                     </div>
-                </div>
 
-                {acceptedShift ? (
-                    <div className="shift-details">
-                        <div className="shift-detail">
-                            <i className="fas fa-calendar-day"></i>
-                            <span><strong>Ngày:</strong> {acceptedShift.shiftDate}</span>
+                    {acceptedShift && (
+                        <div className="shift-info">
+                            <strong>Ca trực:</strong> {acceptedShift.timeSlot}
                         </div>
-                        <div className="shift-detail">
-                            <i className="fas fa-clock"></i>
-                            <span><strong>Ca trực:</strong> {acceptedShift.timeSlot}</span>
+                    )}
+                </div>
+            </div>
+
+            <div className="tower-grid">
+                {Object.keys(blockMap).map((blockKey) => {
+                    const blockName = blockMap[blockKey];
+                    const isActive =
+                        acceptedShift && acceptedShift.block === blockName;
+                    return (
+                        <div key={blockKey} className={`tower ${isActive ? "active" : ""}`}>
+                            <i className="fas fa-building tower-icon" aria-hidden="true"></i>
+                            <span className="tower-label">{blockName}</span>
                         </div>
-                        <div className="shift-detail">
-                            <i className="fas fa-map-marker-alt"></i>
-                            <span><strong>Khu vực:</strong> {acceptedShift.block}</span>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="no-shift">
-                        <i className="fas fa-bed"></i>
-                        <p>Không có ca trực cho ngày này.</p>
-                    </div>
-                )}
+                    );
+                })}
             </div>
         </div>
     );

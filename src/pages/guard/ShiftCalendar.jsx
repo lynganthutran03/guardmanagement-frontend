@@ -14,11 +14,15 @@ const ShiftCalendar = ({ shiftData }) => {
         }
     };
 
+    const formatBlock = (block) => {
+        return block.replace("BLOCK_", "Block ");
+    };
+
     const renderEventContent = (eventInfo) => {
         return (
             <div className="fc-event-inner">
                 <b>{eventInfo.timeText}</b>
-                <i>{eventInfo.event.extendedProps.block}</i>
+                <i>{formatBlock(eventInfo.event.extendedProps.block)}</i>
             </div>
         );
     };
@@ -29,7 +33,7 @@ const ShiftCalendar = ({ shiftData }) => {
         tooltip.innerHTML = `
         <strong>Ca:</strong> ${info.event.extendedProps.timeSlot}<br/>
         <strong>Giờ:</strong> ${getTimeRange(info.event.extendedProps.timeSlot)}<br/>
-        <strong>Block:</strong> ${info.event.extendedProps.block}
+        <strong>Block:</strong> ${formatBlock(info.event.extendedProps.block)}
     `;
 
         document.body.appendChild(tooltip);

@@ -8,9 +8,15 @@ const mockAbsences = [
 ];
 
 const ListOfAbsence = () => {
+  const approvedCount = mockAbsences.filter(a => a.status === 'APPROVED').length;
+
   return (
     <div className="absence-list-container">
       <h2 className="absence-title">Danh sách nghỉ phép</h2>
+      <p className="approved-count">
+        Số lần nghỉ phép đã duyệt: <strong>{approvedCount}</strong>
+      </p>
+
       <table className="absence-table">
         <thead>
           <tr>

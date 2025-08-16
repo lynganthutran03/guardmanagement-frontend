@@ -94,10 +94,9 @@ const ManagerHomePage = ({ }) => {
 
     return (
         <div className="manager-home-page">
-            {/* DASHBOARD GRID START */}
             <div className="dashboard-grid">
                 <div className="card">
-                    <h4>Vắng mặt hôm nay</h4>
+                    <h4>Điểm danh hôm nay</h4>
                     <Pie data={pieData} />
                 </div>
 

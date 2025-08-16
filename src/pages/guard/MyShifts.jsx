@@ -3,6 +3,12 @@ import axios from 'axios';
 import { TitleContext } from '../../context/TitleContext';
 import './MyShifts.css';
 
+const timeSlotMap = {
+    MORNING: "07:30 - 11:30",
+    AFTERNOON: "11:30 - 15:30",
+    EVENING: "15:30 - 19:30"
+};
+
 const MyShifts = () => {
     const { setTitle } = useContext(TitleContext);
     const [shifts, setShifts] = useState([]);
@@ -40,7 +46,7 @@ const MyShifts = () => {
                         shifts.map(shift => (
                             <tr key={shift.id}>
                                 <td>{shift.shiftDate}</td>
-                                <td>{shift.timeSlot}</td>
+                                <td>{timeSlotMap[shift.timeSlot] || shift.timeSlot}</td>
                                 <td>{shift.block}</td>
                             </tr>
                         ))
