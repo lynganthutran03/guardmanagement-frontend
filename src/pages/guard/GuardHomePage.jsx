@@ -94,7 +94,9 @@ const GuardHomePage = ({ user }) => {
                 <div className="charts-box">
                     <div className="card">
                         <h4>Thống kê ca trực</h4>
-                        <Pie data={pieData} />
+                        <div className="chart-tall">
+                            <Pie data={pieData} />
+                        </div>
                     </div>
                     <div className="card">
                         <h4>Số ca theo tuần</h4>

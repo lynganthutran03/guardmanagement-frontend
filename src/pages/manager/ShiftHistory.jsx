@@ -94,29 +94,25 @@ const ShiftHistory = () => {
             </div>
 
             {/* Shift Table */}
-            {Object.keys(filteredData).map((date) => (
-                <div className="shift-card" key={date}>
-
-                    <div className="shift-header">
-                        <h4>{date}</h4>
-                    </div>
-
-                    <div className="shift-table">
-                        <div className="shift-table-header">
-                            <div>ID</div>
-                            <div>Block</div>
-                            <div>Ca</div>
-                        </div>
-                        {filteredData[date].map((s, i) => (
-                            <div className="shift-table-row" key={i}>
-                                <div>{s.id}</div>
-                                <div>{s.block}</div>
-                                <div>{s.shift}</div>
-                            </div>
-                        ))}
-                    </div>
+            <div className="shift-history-table">
+                <div className="shift-history-header">
+                    <div>Ngày</div>
+                    <div>ID</div>
+                    <div>Block</div>
+                    <div>Ca</div>
                 </div>
-            ))}
+
+                {Object.keys(filteredData).map((date) =>
+                    filteredData[date].map((s, i) => (
+                        <div className="shift-history-row" key={`${date}-${i}`}>
+                            <div>{date}</div>
+                            <div>{s.id}</div>
+                            <div>{s.block}</div>
+                            <div>{s.shift}</div>
+                        </div>
+                    ))
+                )}
+            </div>
         </div>
     );
 };

@@ -10,7 +10,7 @@ const Sidebar = ({ user, setPage }) => {
 
     return (
         <div className="sidebar">
-            <h2>Vui Vẻ Hong Quạo</h2>
+            <h2>EIU - Vigilant</h2>
             <ul>
                 {user?.role?.toUpperCase() === 'GUARD' ? (
                     <>
@@ -30,10 +30,10 @@ const Sidebar = ({ user, setPage }) => {
                         {viewOpen && (
                             <ul className="dropdown-children">
                                 <li onClick={() => setPage('my-shifts')}>
-                                    <i className="fa-solid fa-clock"></i>Ca Trực Của Tôi
+                                    <i className="fa-solid fa-clock"></i>Lịch Sử Ca Trực
                                 </li>
                                 <li onClick={() => setPage('absence')}>
-                                    <i className="fa-solid fa-calendar-xmark"></i>Buổi Nghỉ
+                                    <i className="fa-solid fa-calendar-xmark"></i>Danh Sách Nghỉ Phép
                                 </li>
                             </ul>
                         )}

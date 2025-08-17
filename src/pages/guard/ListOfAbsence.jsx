@@ -1,4 +1,5 @@
-import React from 'react';
+import { React, useEffect, useContext} from 'react';
+import { TitleContext } from '../../context/TitleContext';
 import './ListOfAbsence.css';
 
 const mockAbsences = [
@@ -8,15 +9,16 @@ const mockAbsences = [
 ];
 
 const ListOfAbsence = () => {
+  const { setTitle } = useContext(TitleContext);
   const approvedCount = mockAbsences.filter(a => a.status === 'APPROVED').length;
+
+  useEffect(() => {
+    setTitle('Danh Sách Nghỉ Phép');
+  }, [setTitle]);
 
   return (
     <div className="absence-list-container">
-      <h2 className="absence-title">Danh sách nghỉ phép</h2>
-      <p className="approved-count">
-        Số lần nghỉ phép đã duyệt: <strong>{approvedCount}</strong>
-      </p>
-
+      <h3>Số lần nghỉ phép đã duyệt: {approvedCount}</h3>
       <table className="absence-table">
         <thead>
           <tr>
