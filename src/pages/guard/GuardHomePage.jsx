@@ -49,11 +49,11 @@ const GuardHomePage = ({ user }) => {
     }, []);
 
     const pieData = {
-        labels: ['Ca sáng', 'Ca Chiều', 'Ca Tối'],
+        labels: ['Ca sáng', 'Ca Tối'],
         datasets: [
             {
-                data: [10, 12, 8],
-                backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+                data: [10, 8],
+                backgroundColor: ['#36A2EB', '#FFCE56'],
                 borderWidth: 1,
             },
         ],

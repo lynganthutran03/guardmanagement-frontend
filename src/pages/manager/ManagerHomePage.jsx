@@ -46,16 +46,16 @@ const ManagerHomePage = ({ }) => {
     };
 
     const barData = {
-        labels: ['Sáng', 'Chiều', 'Tối'],
+        labels: ['Sáng', 'Tối'],
         datasets: [
             {
                 label: 'Đã phân ca',
-                data: [10, 12, 8],
+                data: [10, 8],
                 backgroundColor: '#36A2EB',
             },
             {
                 label: 'Chưa phân ca',
-                data: [2, 1, 3],
+                data: [2, 3],
                 backgroundColor: '#FFCE56',
             },
         ],

@@ -15,7 +15,7 @@ const ShiftGenerate = () => {
     const [employeeId, setEmployeeId] = useState('');
     const [employees, setEmployees] = useState([]);
     const [selectedTime, setSelectedTime] = useState('');
-    const [selectedBlock, setSelectedBlock] = useState('');
+    const [selectedLocation, setSelectedLocation] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [hasAccepted, setHasAccepted] = useState(false);
 
@@ -47,7 +47,7 @@ const ShiftGenerate = () => {
 
         const payload = {
             shiftDate: selectedDate,
-            ...(mode === 'TIME' ? { timeSlot: selectedTime } : { block: selectedBlock })
+            ...(mode === 'TIME' ? { timeSlot: selectedTime } : { location: selectedLocation })
         };
 
         try {
@@ -101,31 +101,30 @@ const ShiftGenerate = () => {
                                 type="radio"
                                 value="TIME"
                                 checked={mode === 'TIME'}
-                                onChange={() => { setMode('TIME'); setSelectedBlock(''); }}
+                                onChange={() => { setMode('TIME'); setSelectedLocation(''); }}
                             />
                             Chọn khung giờ
                         </label>
                         <label>
                             <input
                                 type="radio"
-                                value="BLOCK"
-                                checked={mode === 'BLOCK'}
-                                onChange={() => { setMode('BLOCK'); setSelectedTime(''); }}
+                                value="LOCATION"
+                                checked={mode === 'LOCATION'}
+                                onChange={() => { setMode('LOCATION'); setSelectedTime(''); }}
                             />
-                            Chọn Block
+                            Chọn địa điểm
                         </label>
                     </div>
 
                     {mode === 'TIME' ? (
                         <select value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)}>
                             <option value="">-- Khung giờ --</option>
-                            <option value="MORNING">07:30 - 11:30</option>
-                            <option value="AFTERNOON">11:30 - 15:30</option>
-                            <option value="EVENING">15:30 - 19:30</option>
+                            <option value="DAY_SHIFT">07:30 - 14:30</option>
+                            <option value="NIGHT_SHIFT">14:30 - 21:30</option>
                         </select>
                     ) : (
-                        <select value={selectedBlock} onChange={(e) => setSelectedBlock(e.target.value)}>
-                            <option value="">-- Block --</option>
+                        <select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)}>
+                            <option value="">-- Khu vực --</option>
                             <option value="BLOCK_3">Block 3</option>
                             <option value="BLOCK_4">Block 4</option>
                             <option value="BLOCK_5">Block 5</option>
@@ -133,6 +132,10 @@ const ShiftGenerate = () => {
                             <option value="BLOCK_8">Block 8</option>
                             <option value="BLOCK_10">Block 10</option>
                             <option value="BLOCK_11">Block 11</option>
+
+                            <option value="GATE_1">Gate 1</option>
+                            <option value="GATE_2">Gate 2</option>
+                            <option value="GATE_3">Gate 3</option>
                         </select>
                     )}
                 </div>
@@ -143,7 +146,7 @@ const ShiftGenerate = () => {
                         !employeeId ||
                         !selectedDate ||
                         (mode === 'TIME' && !selectedTime) ||
-                        (mode === 'BLOCK' && !selectedBlock) ||
+                        (mode === 'LOCATION' && !selectedLocation) ||
                         shifts.length >= 3 ||
                         hasAssignedToday
                     }>
@@ -155,7 +158,7 @@ const ShiftGenerate = () => {
                         <div className="current-shift-box">
                             <p><strong>Ngày:</strong> {currentShift.shiftDate}</p>
                             <p><strong>Ca:</strong> {currentShift.timeSlot}</p>
-                            <p><strong>Block:</strong> {currentShift.block}</p>
+                            <p><strong>Khu vực:</strong> {currentShift.location}</p>
                         </div>
                         <button
                             className="accept-button"
@@ -189,7 +192,7 @@ const ShiftGenerate = () => {
                             className={`shift-box ${currentShift?.id === shift.id ? 'selected' : ''}`}
                             onClick={() => setCurrentShift(shift)}
                             style={{ cursor: 'pointer' }}>
-                            <p>{shift.shiftDate} - {shift.timeSlot} - {shift.block}</p>
+                            <p>{shift.shiftDate} - {shift.timeSlot} - {shift.location}</p>
                         </div>
                     ))
                 ) : (

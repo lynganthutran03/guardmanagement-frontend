@@ -7,9 +7,8 @@ import './ShiftCalendar.css';
 const ShiftCalendar = ({ shiftData }) => {
     const getTimeRange = (slot) => {
         switch (slot) {
-            case "MORNING": return "07:30 - 11:30";
-            case "AFTERNOON": return "11:30 - 15:30";
-            case "EVENING": return "15:30 - 19:30";
+            case "DAY_SHIFT": return "07:30 - 14:30";
+            case "NIGHT_SHIFT": return "14:30 - 21:30";
             default: return "";
         }
     };
@@ -72,11 +71,9 @@ const ShiftCalendar = ({ shiftData }) => {
                 title: `${shift.timeSlot} - ${shift.block}`,
                 start: shift.shiftDate,
                 color:
-                    shift.timeSlot === "MORNING"
+                    shift.timeSlot === "DAY_SHIFT"
                         ? "#4caf50"
-                        : shift.timeSlot === "AFTERNOON"
-                            ? "#ff9800"
-                            : "#2196f3",
+                        : "#2196f3",
                 extendedProps: {
                     block: shift.block,
                     timeSlot: shift.timeSlot,
