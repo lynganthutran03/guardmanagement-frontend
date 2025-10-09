@@ -1,40 +1,45 @@
-.my-shifts-page {
-    padding: 2rem;
+.shift-history-page {
+    padding: 20px;
     background-color: #f9fafb;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    max-width: 1200px;
-    margin: auto;
-}
-
-.my-shifts-page h2 {
-    font-size: 1.75rem;
-    color: #333;
-    margin-bottom: 1rem;
 }
 
 .shift-history-table {
     width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
     overflow: hidden;
+    background-color: #ffffff;
 }
 
-.shift-history-table th,
-.shift-history-table td {
-    padding: 12px 20px;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
+.shift-history-header,
+.shift-history-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 14px 20px;
     font-size: 0.95rem;
 }
 
-.shift-history-table th {
+.shift-history-header {
     background-color: #f3f4f6;
-    color: #111827;
-    font-weight: 600;
+    font-weight: bold;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
 }
 
-.shift-history-table tr:hover {
-    background-color: #f0fdf4;
+.shift-history-row {
+    border-bottom: 1px solid #e5e7eb;
+    color: #111827;
+}
+
+.shift-history-row:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.shift-history-row:last-child {
+    border-bottom: none;
+}
+
+.empty-row {
+    text-align: center;
+    color: #6b7280;
 }

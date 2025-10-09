@@ -13,12 +13,16 @@
 }
 
 .shift-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     flex: 1;
-    min-width: 400px;
-    padding: 25px;
-    border-radius: 10px;
-    background: #f9fafb;
+    min-width: 420px;
+    padding: 32px 28px;
+    border-radius: 16px;
+    background: #ffffff;
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;
 }
 
 .absent-card {
@@ -45,7 +49,7 @@
 .shift-card select,
 .shift-card input {
     width: 100%;
-    padding: 8px;
+    padding: 12px 14px;
     border-radius: 6px;
     border: 1px solid #ccc;
     margin-top: 5px;

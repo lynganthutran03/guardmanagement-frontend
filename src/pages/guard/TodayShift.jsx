@@ -31,13 +31,7 @@ const TodayShift = () => {
 
         axios.get(url, { withCredentials: true })
             .then(res => {
-                let shiftData;
-                if (Array.isArray(res.data)) {
-                    shiftData = res.data.length > 0 ? res.data[0] : null;
-                } else {
-                    shiftData = res.data;
-                }
-
+                const shiftData = Array.isArray(res.data) ? res.data[0] : res.data;
                 if (shiftData) {
                     setAcceptedShift({
                         shiftDate: shiftData.shiftDate,
@@ -65,33 +59,29 @@ const TodayShift = () => {
     return (
         <div className="shift-container">
             <div className="shift-header">
-                {/* Flex container for date picker and time */}
-                <div className="date-time-row">
-                    <div className="date-picker">
-                        <label>Chọn ngày:</label>
-                        <input
-                            type="date"
-                            value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
-                        />
-                    </div>
-
-                    {acceptedShift && (
-                        <div className="shift-info">
-                            <strong>Ca trực:</strong> {acceptedShift.timeSlot}
-                        </div>
-                    )}
+                <div className="date-picker">
+                    <label>Chọn ngày:</label>
+                    <input
+                        type="date"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                    />
                 </div>
+                {acceptedShift && (
+                    <div className="shift-info">
+                        Ca trực: <strong>{acceptedShift.timeSlot}</strong>
+                    </div>
+                )}
             </div>
 
             <div className="tower-grid">
                 {Object.keys(blockMap).map((blockKey) => {
                     const blockName = blockMap[blockKey];
-                    const isActive =
-                        acceptedShift && acceptedShift.block === blockName;
+                    const isActive = acceptedShift?.block === blockName;
+
                     return (
                         <div key={blockKey} className={`tower ${isActive ? "active" : ""}`}>
-                            <i className="fas fa-building tower-icon" aria-hidden="true"></i>
+                            <i className="fas fa-building tower-icon"></i>
                             <span className="tower-label">{blockName}</span>
                         </div>
                     );

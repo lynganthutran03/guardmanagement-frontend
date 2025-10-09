@@ -14,7 +14,8 @@ const mockShifts = [
     { guardId: 2, date: '2025-07-31', timeSlot: 'AFTERNOON', block: 'BLOCK_5' },
     { guardId: 3, date: '2025-07-30', timeSlot: 'EVENING', block: 'BLOCK_4' },
     { guardId: 4, date: '2025-07-31', timeSlot: 'MORNING', block: 'BLOCK_6' },
-    { guardId: 4, date: '2025-08-20', timeSlot: 'MORNING', block: 'BLOCK_8' },
+    { guardId: 1, date: '2025-08-16', timeSlot: 'MORNING', block: 'BLOCK_8' },
+    { guardId: 4, date: '2025-08-20', timeSlot: 'MORNING', block: 'BLOCK_10' },
 ];
 
 const ShiftReassign = () => {
