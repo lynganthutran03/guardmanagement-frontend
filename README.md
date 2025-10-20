@@ -2,6 +2,10 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## How to log in
+For guard: guard1 / Guard123 (Can test from guard1 to guard10)
+For manager: manager1 / Manager123
+
 ## Available Scripts
 
 In the project directory, you can run:
