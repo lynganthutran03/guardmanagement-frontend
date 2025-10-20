@@ -32,7 +32,7 @@ const ShiftGenerate = () => {
     }, [selectedDate, employeeId]);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/api/employees")
+        axios.get("/api/employees")
             .then(res => setEmployees(res.data))
             .catch(() => toast.error("Không thể tải danh sách nhân viên."));
     }, []);
@@ -51,7 +51,7 @@ const ShiftGenerate = () => {
         };
 
         try {
-            const res = await axios.post('http://localhost:8080/api/manager/shifts', payload);
+            const res = await axios.post('/api/manager/shifts', payload);
             setShifts(prev => [...prev, res.data]);
             setCurrentShift(res.data);
         } catch (err) {
@@ -63,7 +63,7 @@ const ShiftGenerate = () => {
 
     const fetchGeneratedShifts = async () => {
         try {
-            const res = await axios.get(`http://localhost:8080/api/manager/shifts?date=${selectedDate}&employeeId=${employeeId}`);
+            const res = await axios.get(`/api/manager/shifts?date=${selectedDate}&employeeId=${employeeId}`);
             setShifts(res.data);
         } catch (err) {
             console.error("Error loading shifts", err);
@@ -164,7 +164,7 @@ const ShiftGenerate = () => {
                             className="accept-button"
                             onClick={async () => {
                                 try {
-                                    await axios.post("http://localhost:8080/api/manager/shifts/assign", {
+                                    await axios.post("/api/manager/shifts/assign", {
                                         shiftId: currentShift.id,
                                         employeeId
                                     });

@@ -14,14 +14,14 @@ function Login({ onLoginSuccess }) {
         params.append('username', username);
         params.append('password', password);
 
-        axios.post("http://localhost:8080/api/login", params, {
+        axios.post("/api/login", params, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         })
             .then(() => {
-                return axios.get("http://localhost:8080/api/userinfo", {
+                return axios.get("/api/userinfo", {
                     withCredentials: true
                 });
             })

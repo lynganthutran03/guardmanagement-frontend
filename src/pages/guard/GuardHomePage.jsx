@@ -38,7 +38,7 @@ const GuardHomePage = ({ user }) => {
     }, [setTitle]);
 
     useEffect(() => {
-        axios.get("http://localhost:8080/api/shifts/calendar", { withCredentials: true })
+        axios.get("/api/shifts/calendar", { withCredentials: true })
             .then((res) => {
                 const onlyAccepted = res.data.filter(shift => shift.employeeId !== null);
                 setAcceptedShift(onlyAccepted);

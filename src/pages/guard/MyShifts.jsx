@@ -24,7 +24,7 @@ const MyShifts = () => {
 
     useEffect(() => {
         setTitle('Lịch Sử Ca Trực');
-        axios.get('http://localhost:8080/api/shifts/history', {
+        axios.get('/api/shifts/history', {
             withCredentials: true
         })
             .then(res => setShifts(res.data))
@@ -42,7 +42,7 @@ const MyShifts = () => {
 
                 {shifts.length === 0 ? (
                     <div className="shift-history-row empty-row">
-                        <span colSpan="3">Không có ca trực nào trong quá khứ.</span>
+                        <span>Không có ca trực nào trong quá khứ.</span>
                     </div>
                 ) : (
                     shifts.map(shift => (

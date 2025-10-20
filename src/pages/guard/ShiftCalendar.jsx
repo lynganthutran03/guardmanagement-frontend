@@ -13,15 +13,18 @@ const ShiftCalendar = ({ shiftData }) => {
         }
     };
 
-    const formatBlock = (block) => {
-        return block.replace("BLOCK_", "Block ");
+    const formatBlock = (location) => {
+        if (!location) return "No Location";
+
+        return location.replace("BLOCK_", "Block ")
+                    .replace("GATE_", "Gate ");
     };
 
     const renderEventContent = (eventInfo) => {
         return (
             <div className="fc-event-inner">
                 <b>{eventInfo.timeText}</b>
-                <i>{formatBlock(eventInfo.event.extendedProps.block)}</i>
+                <i>{formatBlock(eventInfo.event.extendedProps.location)}</i>
             </div>
         );
     };
@@ -32,7 +35,7 @@ const ShiftCalendar = ({ shiftData }) => {
         tooltip.innerHTML = `
         <strong>Ca:</strong> ${info.event.extendedProps.timeSlot}<br/>
         <strong>Giờ:</strong> ${getTimeRange(info.event.extendedProps.timeSlot)}<br/>
-        <strong>Block:</strong> ${formatBlock(info.event.extendedProps.block)}
+        <strong>Khu vực:</strong> ${formatBlock(info.event.extendedProps.location)}
     `;
 
         document.body.appendChild(tooltip);
@@ -68,14 +71,14 @@ const ShiftCalendar = ({ shiftData }) => {
             locale="vi"
             height="auto"
             events={shiftData.map(shift => ({
-                title: `${shift.timeSlot} - ${shift.block}`,
+                title: `${shift.timeSlot} - ${shift.location}`,
                 start: shift.shiftDate,
                 color:
                     shift.timeSlot === "DAY_SHIFT"
                         ? "#4caf50"
                         : "#2196f3",
                 extendedProps: {
-                    block: shift.block,
+                    location: shift.location,
                     timeSlot: shift.timeSlot,
                 }
             }))}

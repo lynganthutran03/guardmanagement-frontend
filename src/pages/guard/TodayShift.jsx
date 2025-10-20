@@ -16,7 +16,11 @@ const blockMap = {
     BLOCK_6: "Block 6",
     BLOCK_8: "Block 8",
     BLOCK_10: "Block 10",
-    BLOCK_11: "Block 11"
+    BLOCK_11: "Block 11",
+
+    GATE_1: "Gate 1",
+    GATE_2: "Gate 2",
+    GATE_3: "Gate 3"
 };
 
 const TodayShift = () => {
@@ -26,8 +30,8 @@ const TodayShift = () => {
 
     const fetchShift = (date) => {
         const url = date
-            ? `http://localhost:8080/api/shifts?date=${date}`
-            : "http://localhost:8080/api/shifts/accepted-today";
+            ? `/api/shifts?date=${date}`
+            : "/api/shifts/accepted-today";
 
         axios.get(url, { withCredentials: true })
             .then(res => {
@@ -36,7 +40,7 @@ const TodayShift = () => {
                     setAcceptedShift({
                         shiftDate: shiftData.shiftDate,
                         timeSlot: timeSlotMap[shiftData.timeSlot] || shiftData.timeSlot,
-                        block: blockMap[shiftData.block] || shiftData.block
+                        block: blockMap[shiftData.location] || shiftData.location
                     });
                 } else {
                     setAcceptedShift(null);
