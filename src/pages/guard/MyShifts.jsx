@@ -8,14 +8,18 @@ const timeSlotMap = {
     NIGHT_SHIFT: "14:30 - 21:30"
 };
 
-const blockMap = {
+const locationMap = {
     BLOCK_3: "Block 3",
     BLOCK_4: "Block 4",
     BLOCK_5: "Block 5",
     BLOCK_6: "Block 6",
     BLOCK_8: "Block 8",
     BLOCK_10: "Block 10",
-    BLOCK_11: "Block 11"
+    BLOCK_11: "Block 11",
+
+    GATE_1: "Gate 1",
+    GATE_2: "Gate 2",
+    GATE_3: "Gate 3"
 };
 
 const MyShifts = () => {
@@ -49,7 +53,7 @@ const MyShifts = () => {
                         <div key={shift.id} className="shift-history-row">
                             <span>{shift.shiftDate}</span>
                             <span>{timeSlotMap[shift.timeSlot] || shift.timeSlot}</span>
-                            <span>{blockMap[shift.block] || shift.block}</span>
+                            <span>{locationMap[shift.location] || shift.location}</span>
                         </div>
                     ))
                 )}

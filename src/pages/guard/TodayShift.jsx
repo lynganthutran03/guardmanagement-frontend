@@ -9,7 +9,7 @@ const timeSlotMap = {
     NIGHT_SHIFT: "14:30 - 21:30"
 };
 
-const blockMap = {
+const locationMap = {
     BLOCK_3: "Block 3",
     BLOCK_4: "Block 4",
     BLOCK_5: "Block 5",
@@ -35,12 +35,13 @@ const TodayShift = () => {
 
         axios.get(url, { withCredentials: true })
             .then(res => {
-                const shiftData = Array.isArray(res.data) ? res.data[0] : res.data;
-                if (shiftData) {
+                const shiftData = Array.isArray(res.data) ? res.data[0] : res.data; 
+                
+                if (shiftData && shiftData.shiftDate) {
                     setAcceptedShift({
                         shiftDate: shiftData.shiftDate,
                         timeSlot: timeSlotMap[shiftData.timeSlot] || shiftData.timeSlot,
-                        block: blockMap[shiftData.location] || shiftData.location
+                        location: locationMap[shiftData.location] || shiftData.location 
                     });
                 } else {
                     setAcceptedShift(null);
@@ -57,8 +58,13 @@ const TodayShift = () => {
 
     useEffect(() => {
         setTitle('Lịch Trực');
+        fetchShift(selectedDate || new Date().toISOString().split('T')[0]); 
+    }, [setTitle]);
+
+    useEffect(() => {
         fetchShift(selectedDate);
-    }, [setTitle, selectedDate]);
+    }, [selectedDate]);
+
 
     return (
         <div className="shift-container">
@@ -67,26 +73,30 @@ const TodayShift = () => {
                     <label>Chọn ngày:</label>
                     <input
                         type="date"
-                        value={selectedDate}
+                        value={selectedDate || new Date().toISOString().split('T')[0]} // Default to today
                         onChange={(e) => setSelectedDate(e.target.value)}
                     />
                 </div>
-                {acceptedShift && (
+                {acceptedShift ? ( // Show info only if a shift exists
                     <div className="shift-info">
                         Ca trực: <strong>{acceptedShift.timeSlot}</strong>
+                    </div>
+                ) : (
+                    <div className="shift-info">
+                        <strong>Không có ca trực vào ngày này.</strong>
                     </div>
                 )}
             </div>
 
             <div className="tower-grid">
-                {Object.keys(blockMap).map((blockKey) => {
-                    const blockName = blockMap[blockKey];
-                    const isActive = acceptedShift?.block === blockName;
+                {Object.keys(locationMap).map((locationKey) => {
+                    const locationName = locationMap[locationKey];
+                    const isActive = acceptedShift && acceptedShift.location === locationName;
 
                     return (
-                        <div key={blockKey} className={`tower ${isActive ? "active" : ""}`}>
+                        <div key={locationKey} className={`tower ${isActive ? "active" : ""}`}>
                             <i className="fas fa-building tower-icon"></i>
-                            <span className="tower-label">{blockName}</span>
+                            <span className="tower-label">{locationName}</span>
                         </div>
                     );
                 })}
