@@ -1,42 +1,87 @@
-import { React, useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import { TitleContext } from '../../context/TitleContext';
 import './MyShifts.css';
+import { parseISO } from 'date-fns';
+import * as XLSX from 'xlsx';
+
+axios.defaults.withCredentials = true;
 
 const timeSlotMap = {
-    DAY_SHIFT: "07:30 - 14:30",
-    NIGHT_SHIFT: "14:30 - 21:30"
+    DAY_SHIFT: "Ca Sáng (07:30 - 14:30)",
+    NIGHT_SHIFT: "Ca Tối (14:30 - 21:30)"
 };
-
 const locationMap = {
-    BLOCK_3: "Block 3",
-    BLOCK_4: "Block 4",
-    BLOCK_5: "Block 5",
-    BLOCK_6: "Block 6",
-    BLOCK_8: "Block 8",
-    BLOCK_10: "Block 10",
-    BLOCK_11: "Block 11",
-
-    GATE_1: "Gate 1",
-    GATE_2: "Gate 2",
-    GATE_3: "Gate 3"
+    BLOCK_3: "Block 3", BLOCK_4: "Block 4", BLOCK_5: "Block 5",
+    BLOCK_6: "Block 6", BLOCK_8: "Block 8", BLOCK_10: "Block 10",
+    BLOCK_11: "Block 11", GATE_1: "Gate 1", GATE_2: "Gate 2", GATE_3: "Gate 3"
 };
 
 const MyShifts = () => {
     const { setTitle } = useContext(TitleContext);
     const [shifts, setShifts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         setTitle('Lịch Sử Ca Trực');
-        axios.get('/api/shifts/history', {
-            withCredentials: true
-        })
-            .then(res => setShifts(res.data))
-            .catch(() => setShifts([]));
+        fetchShifts();
     }, [setTitle]);
+
+    const fetchShifts = async () => {
+        setIsLoading(true);
+        try {
+            const res = await axios.get('/api/shifts/history', {
+                withCredentials: true
+            });
+            if (Array.isArray(res.data)) {
+                setShifts(res.data);
+            }
+        } catch (err) {
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleExportExcel = () => {
+        if (shifts.length === 0) {
+            return;
+        }
+
+        const exportData = shifts.map(shift => ({
+            'Ngày': parseISO(shift.shiftDate).toLocaleDateString('vi-VN'),
+            'Ca trực': timeSlotMap[shift.timeSlot] || shift.timeSlot,
+            'Khu vực': locationMap[shift.location] || shift.location
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "LichSuCaTruc");
+
+        const cols = Object.keys(exportData[0] || {}).map(key => ({
+            wch: Math.max(key.length, ...exportData.map(row => (row[key] || "").toString().length)) + 2
+        }));
+        ws["!cols"] = cols;
+
+        XLSX.writeFile(wb, "LichSuCaTruc_CaNhan.xlsx");
+    };
+
+    if (isLoading) {
+        return <div className="shift-history-page"><p>Đang tải dữ liệu...</p></div>;
+    }
 
     return (
         <div className="shift-history-page">
+            <div className="shift-history-controls">
+                <h2>Lịch Sử Ca Trực Của Bạn</h2>
+                <button
+                    onClick={handleExportExcel}
+                    className="excel-export-btn"
+                    disabled={shifts.length === 0}
+                >
+                    <i className="fa-solid fa-file-excel"></i> Xuất Excel
+                </button>
+            </div>
+
             <div className="shift-history-table">
                 <div className="shift-history-header">
                     <span>Ngày</span>
@@ -51,7 +96,7 @@ const MyShifts = () => {
                 ) : (
                     shifts.map(shift => (
                         <div key={shift.id} className="shift-history-row">
-                            <span>{shift.shiftDate}</span>
+                            <span>{parseISO(shift.shiftDate).toLocaleDateString('vi-VN')}</span>
                             <span>{timeSlotMap[shift.timeSlot] || shift.timeSlot}</span>
                             <span>{locationMap[shift.location] || shift.location}</span>
                         </div>

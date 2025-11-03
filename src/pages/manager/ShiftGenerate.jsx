@@ -130,7 +130,7 @@ const ShiftGenerate = () => {
                                         {teamGuards.map(guard => (
                                             <li key={guard.id} className="list-group-item d-flex justify-content-between align-items-center py-1">
                                                 {guard.fullName}
-                                                <small className="text-muted">(ID: {guard.id}, Gr: {guard.rotaGroup || 'N/A'})</small>
+                                                <small className="text-muted">(ID: {guard.identityNumber}, Gr: {guard.rotaGroup || 'N/A'})</small>
                                             </li>
                                         ))}
                                     </ul>

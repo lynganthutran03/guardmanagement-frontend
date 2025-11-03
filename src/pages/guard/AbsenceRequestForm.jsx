@@ -1,33 +1,50 @@
 import React, { useState, useContext, useEffect } from 'react';
+import axios from 'axios';
 import { TitleContext } from '../../context/TitleContext';
-import './AbsenceRequestForm.css'; // optional styling
+import './AbsenceRequestForm.css';
+import { toast } from 'react-toastify';
+
+axios.defaults.withCredentials = true;
 
 const AbsenceRequestForm = () => {
     const { setTitle } = useContext(TitleContext);
     const [startDate, setStartDate] = useState('');
     const [days, setDays] = useState('');
     const [reason, setReason] = useState('');
-    const [submitted, setSubmitted] = useState(false);
-
+    const [isLoading, setIsLoading] = useState(false);
+    
     useEffect(() => {
         setTitle('Yêu Cầu Nghỉ Phép');
     }, [setTitle]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
 
-        // Here you'd send to backend later
-        console.log({
-            startDate,
-            days,
-            reason
-        });
+        const payload = {
+            startDate: startDate,
+            days: parseInt(days),
+            reason: reason
+        };
 
-        setSubmitted(true);
+        try {
+            await axios.post("/api/leave-requests/request", payload);
+            
+            toast.success("Đã gửi yêu cầu nghỉ phép thành công!");
+            
+            setStartDate('');
+            setDays('');
+            setReason('');
+        } catch (err) {
+            const message = err.response?.data?.message || "Lỗi khi gửi yêu cầu.";
+            toast.error(message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const today = new Date().toISOString().split('T')[0];
-    const isFormValid = startDate && days && reason.trim();
+    const isFormValid = startDate && days && reason.trim() && !isLoading;
 
     return (
         <div className="absence-form-container">
@@ -65,14 +82,9 @@ const AbsenceRequestForm = () => {
                 />
 
                 <button type="submit" disabled={!isFormValid}>
-                    Gửi Yêu Cầu
+                    {isLoading ? "Đang gửi..." : "Gửi Yêu Cầu"}
                 </button>
 
-                {submitted && (
-                    <p className="success-message">
-                        ✅ Yêu cầu của bạn đã được gửi (chưa kết nối backend).
-                    </p>
-                )}
             </form>
         </div>
     );

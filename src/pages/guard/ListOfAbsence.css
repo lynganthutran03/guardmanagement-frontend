@@ -3,6 +3,17 @@
   background-color: #f9fafc;
 }
 
+.absence-header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.absence-header-controls h3 {
+  margin: 0;
+}
+
 .absence-table {
   width: 100%;
   border-collapse: collapse;
@@ -37,4 +48,28 @@
 .status-tag.denied {
   background-color: #f8d7da;
   color: #721c24;
+}
+
+.excel-export-btn {
+  padding: 8px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.excel-export-btn:hover:not(:disabled) {
+  background-color: #388e3c;
+}
+
+.excel-export-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }

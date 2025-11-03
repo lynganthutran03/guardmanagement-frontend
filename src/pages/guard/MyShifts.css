@@ -3,6 +3,18 @@
     background-color: #f9fafb;
 }
 
+.shift-history-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.shift-history-controls h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
 .shift-history-table {
     width: 100%;
     border: 1px solid #e5e7eb;
@@ -42,4 +54,26 @@
 .empty-row {
     text-align: center;
     color: #6b7280;
+}
+
+.excel-export-btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.excel-export-btn:hover:not(:disabled) {
+    background-color: #388e3c;
+}
+
+.excel-export-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
