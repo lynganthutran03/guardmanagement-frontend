@@ -1,148 +1,213 @@
 import React, { useState, useContext, useEffect } from 'react';
+import axios from 'axios';
 import { TitleContext } from '../../context/TitleContext';
 import './ShiftReassign.css';
+import { toast } from 'react-toastify';
+import { parseISO } from 'date-fns';
 
-const mockGuards = [
-    { id: 1, name: 'Nguyễn Văn A' },
-    { id: 2, name: 'Trần Thị B' },
-    { id: 3, name: 'Lê Văn C' },
-    { id: 4, name: 'Phạm Thị D' },
-];
+axios.defaults.withCredentials = true;
 
-const mockShifts = [
-    { guardId: 1, date: '2025-08-11', timeSlot: 'MORNING', block: 'BLOCK_10' },
-    { guardId: 2, date: '2025-07-31', timeSlot: 'AFTERNOON', block: 'BLOCK_5' },
-    { guardId: 3, date: '2025-07-30', timeSlot: 'EVENING', block: 'BLOCK_4' },
-    { guardId: 4, date: '2025-07-31', timeSlot: 'MORNING', block: 'BLOCK_6' },
-    { guardId: 1, date: '2025-08-16', timeSlot: 'MORNING', block: 'BLOCK_8' },
-    { guardId: 4, date: '2025-08-20', timeSlot: 'MORNING', block: 'BLOCK_10' },
-];
+const timeSlotMap = {
+    DAY_SHIFT: "Ca Sáng (07:30 - 14:30)",
+    NIGHT_SHIFT: "Ca Tối (14:30 - 21:30)"
+};
+const locationMap = {
+    BLOCK_3: "Block 3", BLOCK_4: "Block 4", BLOCK_5: "Block 5",
+    BLOCK_6: "Block 6", BLOCK_8: "Block 8", BLOCK_10: "Block 10",
+    BLOCK_11: "Block 11", GATE_1: "Gate 1", GATE_2: "Gate 2", GATE_3: "Gate 3"
+};
 
 const ShiftReassign = () => {
     const { setTitle } = useContext(TitleContext);
-    const [absentGuardId, setAbsentGuardId] = useState('');
-    const [absentDate, setAbsentDate] = useState('');
-    const [absentShift, setAbsentShift] = useState(null);
 
+    const [approvedRequests, setApprovedRequests] = useState([]);
+    const [shiftsToReassign, setShiftsToReassign] = useState([]);
+    const [availableGuards, setAvailableGuards] = useState([]);
+
+    const [selectedLeaveRequestId, setSelectedLeaveRequestId] = useState('');
+    const [selectedShiftId, setSelectedShiftId] = useState('');
     const [selectedGuardId, setSelectedGuardId] = useState('');
-    const [newDate, setNewDate] = useState('');
-    const [guardShift, setGuardShift] = useState(null);
+
+    const [isLoadingLeaveRequests, setIsLoadingLeaveRequests] = useState(true);
+    const [isLoadingShifts, setIsLoadingShifts] = useState(false);
+    const [isLoadingGuards, setIsLoadingGuards] = useState(false);
 
     useEffect(() => {
-        setTitle('Phân Công Ca Trực Bù');
+        setTitle('Phân Công Ca Trực Bù (Hoán Đổi)');
+        fetchApprovedRequests();
     }, [setTitle]);
 
-    useEffect(() => {
-        if (absentGuardId && absentDate) {
-            const found = mockShifts.find(
-                shift =>
-                    shift.guardId === parseInt(absentGuardId) &&
-                    shift.date === absentDate
-            );
-            setAbsentShift(found || null);
-        } else {
-            setAbsentShift(null);
+    const fetchApprovedRequests = async () => {
+        setIsLoadingLeaveRequests(true);
+        try {
+            const res = await axios.get("/api/leave-requests/approved");
+            setApprovedRequests(Array.isArray(res.data) ? res.data : []);
+        } catch (err) {
+            toast.error("Không thể tải danh sách đơn nghỉ phép.");
+        } finally {
+            setIsLoadingLeaveRequests(false);
         }
-    }, [absentGuardId, absentDate]);
+    };
 
-    useEffect(() => {
-        if (selectedGuardId && newDate) {
-            const found = mockShifts.find(
-                shift =>
-                    shift.guardId === parseInt(selectedGuardId) &&
-                    shift.date === newDate
-            );
-            setGuardShift(found || null);
-        } else {
-            setGuardShift(null);
+    const handleLeaveRequestSelect = async (leaveId) => {
+        setSelectedLeaveRequestId(leaveId);
+        setSelectedShiftId('');
+        setSelectedGuardId('');
+        setShiftsToReassign([]);
+        setAvailableGuards([]);
+
+        if (!leaveId) return;
+
+        setIsLoadingShifts(true);
+        try {
+            const selectedRequest = approvedRequests.find(r => r.id.toString() === leaveId);
+            if (!selectedRequest) return;
+
+            const res = await axios.get("/api/manager/shifts/by-guard", {
+                params: {
+                    guardId: selectedRequest.guardId,
+                    startDate: selectedRequest.startDate,
+                    endDate: selectedRequest.endDate
+                }
+            });
+            setShiftsToReassign(Array.isArray(res.data) ? res.data : []);
+        } catch (err) {
+            toast.error("Không thể tải ca trực của bảo vệ này.");
+        } finally {
+            setIsLoadingShifts(false);
         }
-    }, [selectedGuardId, newDate]);
+    };
 
-    const handleReassign = () => {
-        if (!absentGuardId || !absentDate || !selectedGuardId || !newDate) {
-            alert("Vui lòng chọn đầy đủ thông tin hoán đổi.");
+    const handleShiftSelect = async (shiftId) => {
+        setSelectedShiftId(shiftId);
+        setSelectedGuardId('');
+        setAvailableGuards([]);
+
+        if (!shiftId) return;
+
+        setIsLoadingGuards(true);
+        try {
+            const selectedShift = shiftsToReassign.find(s => s.id.toString() === shiftId);
+            if (!selectedShift) return;
+
+            const res = await axios.get(`/api/manager/guards/available?date=${selectedShift.shiftDate}`);
+            setAvailableGuards(Array.isArray(res.data) ? res.data : []);
+        } catch (err) {
+            toast.error("Không thể tải danh sách bảo vệ rảnh.");
+        } finally {
+            setIsLoadingGuards(false);
+        }
+    };
+
+    const handleAssignShift = async () => {
+        if (!selectedShiftId || !selectedGuardId) {
+            toast.warn("Vui lòng chọn ca cần bù và bảo vệ thay thế.");
             return;
         }
 
-        const absentGuard = mockGuards.find(g => g.id === parseInt(absentGuardId));
-        const replacementGuard = mockGuards.find(g => g.id === parseInt(selectedGuardId));
+        try {
+            const payload = {
+                shiftId: parseInt(selectedShiftId),
+                guardId: parseInt(selectedGuardId)
+            };
 
-        alert(`Đã hoán đổi ca ngày ${absentDate} của ${absentGuard.name} với ca ngày ${newDate} của ${replacementGuard.name}`);
+            await axios.post("/api/manager/shifts/assign", payload);
+            toast.success("Đã phân công ca trực thành công!");
+
+            setSelectedLeaveRequestId('');
+            setSelectedShiftId('');
+            setSelectedGuardId('');
+            setShiftsToReassign([]);
+            setAvailableGuards([]);
+            await fetchApprovedRequests();
+
+        } catch (err) {
+            const message = err.response?.data?.message || "Lỗi khi phân công ca trực.";
+            toast.error(message);
+        }
+    };
+
+    const formatShiftName = (shift) => {
+        try {
+            const date = parseISO(shift.shiftDate).toLocaleDateString('vi-VN');
+            const time = timeSlotMap[shift.timeSlot] || shift.timeSlot || "N/A";
+            const location = locationMap[shift.location] || shift.location || "N/A";
+            return `${date} - (${time}) - tại ${location}`;
+        } catch (e) { return `Ca ID: ${shift.id}`; }
     };
 
     return (
         <div className="reassign-container">
             <div className="shift-swap-panel">
                 <div className="shift-card absent-card">
-                    <h4>Ca nghỉ cần hoán đổi</h4>
-
-                    <label>Chọn nhân viên:</label>
+                    <h4>1. Chọn Bảo Vệ/Đơn Nghỉ Phép</h4>
+                    <label>Đơn nghỉ phép đã duyệt (chưa xử lý ca):</label>
                     <select
-                        value={absentGuardId}
-                        onChange={e => setAbsentGuardId(e.target.value)}
+                        value={selectedLeaveRequestId}
+                        onChange={(e) => handleLeaveRequestSelect(e.target.value)}
+                        disabled={isLoadingLeaveRequests}
                     >
-                        <option value="">-- Chọn bảo vệ --</option>
-                        {mockGuards.map(guard => (
-                            <option key={guard.id} value={guard.id}>{guard.name}</option>
+                        <option value="">-- {isLoadingLeaveRequests ? "Đang tải..." : "Chọn đơn nghỉ"} --</option>
+                        {approvedRequests.map(req => (
+                            <option key={req.id} value={req.id}>
+                                {req.guardName} (Nghỉ từ {parseISO(req.startDate).toLocaleDateString('vi-VN')})
+                            </option>
                         ))}
                     </select>
-
-                    <label>Chọn ngày nghỉ:</label>
-                    <input
-                        type="date"
-                        value={absentDate}
-                        onChange={e => setAbsentDate(e.target.value)}
-                        min="2025-07-01"
-                    />
-
-                    {absentShift ? (
-                        <div className="guard-shift-info">
-                            <p><strong>Ngày:</strong> {absentShift.date}</p>
-                            <p><strong>Ca:</strong> {absentShift.timeSlot}</p>
-                            <p><strong>Block:</strong> {absentShift.block}</p>
-                        </div>
-                    ) : (
-                        absentGuardId && absentDate && <p className="no-shift">Không tìm thấy ca trực</p>
-                    )}
                 </div>
 
                 <div className="swap-icon">
-                    <i className="fas fa-right-left"></i>
+                    <i className="fas fa-arrow-right"></i>
                 </div>
 
                 <div className="shift-card replacement-card">
-                    <h4>Nhân viên thay thế</h4>
-                    <label>Chọn nhân viên:</label>
-                    <select value={selectedGuardId} onChange={e => setSelectedGuardId(e.target.value)}>
-                        <option value="">-- Chọn bảo vệ --</option>
-                        {mockGuards.map(guard => (
-                            <option key={guard.id} value={guard.id}>{guard.name}</option>
+                    <h4>2. Chọn Ca Cần Bù</h4>
+                    <label>Ca trực của bảo vệ trong thời gian nghỉ:</label>
+                    <select
+                        value={selectedShiftId}
+                        onChange={(e) => handleShiftSelect(e.target.value)}
+                        disabled={!selectedLeaveRequestId || isLoadingShifts}
+                    >
+                        <option value="">-- {isLoadingShifts ? "Đang tải ca..." : "Chọn ca cần bù"} --</option>
+                        {shiftsToReassign.map(shift => (
+                            <option key={shift.id} value={shift.id}>
+                                {formatShiftName(shift)}
+                            </option>
                         ))}
                     </select>
+                </div>
+            </div>
 
-                    <label>Chọn ngày hoán đổi:</label>
-                    <input
-                        type="date"
-                        value={newDate}
-                        onChange={e => setNewDate(e.target.value)}
-                        min="2025-07-01"
-                    />
-
-                    {guardShift ? (
-                        <div className="guard-shift-info">
-                            <p><strong>Ngày:</strong> {guardShift.date}</p>
-                            <p><strong>Ca:</strong> {guardShift.timeSlot}</p>
-                            <p><strong>Block:</strong> {guardShift.block}</p>
-                        </div>
-                    ) : (
-                        selectedGuardId && newDate && <p className="no-shift">Không tìm thấy ca trực</p>
+            <div className="shift-swap-panel" style={{ marginTop: '20px' }}>
+                <div className="shift-card replacement-card" style={{ width: '100%' }}>
+                    <h4>3. Chọn Bảo Vệ Thay Thế</h4>
+                    <label>Bảo vệ rảnh vào ngày đã chọn:</label>
+                    <select
+                        value={selectedGuardId}
+                        onChange={(e) => setSelectedGuardId(e.target.value)}
+                        disabled={!selectedShiftId || isLoadingGuards}
+                    >
+                        <option value="">-- {isLoadingGuards ? "Đang tải..." : "Chọn bảo vệ thay thế"} --</option>
+                        {availableGuards.map(guard => (
+                            <option key={guard.id} value={guard.id}>
+                                {guard.fullName} (ID: {guard.identityNumber}, Đội: {guard.team})
+                            </option>
+                        ))}
+                    </select>
+                    {!isLoadingGuards && selectedShiftId && availableGuards.length === 0 && (
+                        <p className="no-shift">Không tìm thấy bảo vệ nào rảnh vào ngày này.</p>
                     )}
                 </div>
             </div>
 
             <div className="swap-actions">
-                <button className="cancel-btn">Hủy</button>
-                <button className="confirm-btn" onClick={handleReassign}>Xác Nhận Hoán Đổi</button>
+                <button
+                    className="confirm-btn"
+                    onClick={handleAssignShift}
+                    disabled={!selectedShiftId || !selectedGuardId}
+                >
+                    Xác Nhận Phân Công
+                </button>
             </div>
         </div>
     );
