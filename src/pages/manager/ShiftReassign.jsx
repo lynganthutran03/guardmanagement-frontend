@@ -24,53 +24,61 @@ const ShiftReassign = () => {
     const [shiftsToReassign, setShiftsToReassign] = useState([]);
     const [availableGuards, setAvailableGuards] = useState([]);
 
-    const [selectedLeaveRequestId, setSelectedLeaveRequestId] = useState('');
-    const [selectedShiftId, setSelectedShiftId] = useState('');
+    const [selectedLeaveRequest, setSelectedLeaveRequest] = useState(null);
+    const [selectedShift, setSelectedShift] = useState(null);
     const [selectedGuardId, setSelectedGuardId] = useState('');
 
-    const [isLoadingLeaveRequests, setIsLoadingLeaveRequests] = useState(true);
+    const [isLoadingRequests, setIsLoadingRequests] = useState(true);
     const [isLoadingShifts, setIsLoadingShifts] = useState(false);
     const [isLoadingGuards, setIsLoadingGuards] = useState(false);
 
     useEffect(() => {
-        setTitle('Phân Công Ca Trực Bù (Hoán Đổi)');
+        setTitle('Phân Công Ca Trực Bù');
         fetchApprovedRequests();
     }, [setTitle]);
 
     const fetchApprovedRequests = async () => {
-        setIsLoadingLeaveRequests(true);
+        setIsLoadingRequests(true);
         try {
             const res = await axios.get("/api/leave-requests/approved");
-            setApprovedRequests(Array.isArray(res.data) ? res.data : []);
+            const futureRequests = (res.data || []).filter(req => 
+                parseISO(req.endDate).getTime() >= new Date().setHours(0, 0, 0, 0)
+            );
+            setApprovedRequests(futureRequests);
         } catch (err) {
             toast.error("Không thể tải danh sách đơn nghỉ phép.");
         } finally {
-            setIsLoadingLeaveRequests(false);
+            setIsLoadingRequests(false);
         }
     };
 
     const handleLeaveRequestSelect = async (leaveId) => {
-        setSelectedLeaveRequestId(leaveId);
-        setSelectedShiftId('');
+        setSelectedShift(null);
         setSelectedGuardId('');
         setShiftsToReassign([]);
         setAvailableGuards([]);
 
-        if (!leaveId) return;
+        if (!leaveId) {
+            setSelectedLeaveRequest(null);
+            return;
+        }
 
+        const request = approvedRequests.find(r => r.id.toString() === leaveId);
+        setSelectedLeaveRequest(request);
         setIsLoadingShifts(true);
+        
         try {
-            const selectedRequest = approvedRequests.find(r => r.id.toString() === leaveId);
-            if (!selectedRequest) return;
-
             const res = await axios.get("/api/manager/shifts/by-guard", {
                 params: {
-                    guardId: selectedRequest.guardId,
-                    startDate: selectedRequest.startDate,
-                    endDate: selectedRequest.endDate
+                    guardId: request.guardId,
+                    startDate: request.startDate,
+                    endDate: request.endDate
                 }
             });
-            setShiftsToReassign(Array.isArray(res.data) ? res.data : []);
+            const unassignedShifts = (res.data || []).filter(
+                shift => shift.guardId === request.guardId
+            );
+            setShiftsToReassign(unassignedShifts);
         } catch (err) {
             toast.error("Không thể tải ca trực của bảo vệ này.");
         } finally {
@@ -79,18 +87,20 @@ const ShiftReassign = () => {
     };
 
     const handleShiftSelect = async (shiftId) => {
-        setSelectedShiftId(shiftId);
         setSelectedGuardId('');
         setAvailableGuards([]);
 
-        if (!shiftId) return;
-
+        if (!shiftId) {
+            setSelectedShift(null);
+            return;
+        }
+        
+        const shift = shiftsToReassign.find(s => s.id.toString() === shiftId);
+        setSelectedShift(shift);
         setIsLoadingGuards(true);
+        
         try {
-            const selectedShift = shiftsToReassign.find(s => s.id.toString() === shiftId);
-            if (!selectedShift) return;
-
-            const res = await axios.get(`/api/manager/guards/available?date=${selectedShift.shiftDate}`);
+            const res = await axios.get(`/api/manager/guards/available?date=${shift.shiftDate}`);
             setAvailableGuards(Array.isArray(res.data) ? res.data : []);
         } catch (err) {
             toast.error("Không thể tải danh sách bảo vệ rảnh.");
@@ -100,26 +110,26 @@ const ShiftReassign = () => {
     };
 
     const handleAssignShift = async () => {
-        if (!selectedShiftId || !selectedGuardId) {
+        if (!selectedShift || !selectedGuardId) {
             toast.warn("Vui lòng chọn ca cần bù và bảo vệ thay thế.");
             return;
         }
 
         try {
             const payload = {
-                shiftId: parseInt(selectedShiftId),
+                shiftId: selectedShift.id,
                 guardId: parseInt(selectedGuardId)
             };
 
             await axios.post("/api/manager/shifts/assign", payload);
             toast.success("Đã phân công ca trực thành công!");
 
-            setSelectedLeaveRequestId('');
-            setSelectedShiftId('');
+            setSelectedLeaveRequest(null);
+            setSelectedShift(null);
             setSelectedGuardId('');
             setShiftsToReassign([]);
             setAvailableGuards([]);
-            await fetchApprovedRequests();
+            fetchApprovedRequests();
 
         } catch (err) {
             const message = err.response?.data?.message || "Lỗi khi phân công ca trực.";
@@ -127,88 +137,96 @@ const ShiftReassign = () => {
         }
     };
 
-    const formatShiftName = (shift) => {
-        try {
-            const date = parseISO(shift.shiftDate).toLocaleDateString('vi-VN');
-            const time = timeSlotMap[shift.timeSlot] || shift.timeSlot || "N/A";
-            const location = locationMap[shift.location] || shift.location || "N/A";
-            return `${date} - (${time}) - tại ${location}`;
-        } catch (e) { return `Ca ID: ${shift.id}`; }
-    };
-
     return (
-        <div className="reassign-container">
-            <div className="shift-swap-panel">
-                <div className="shift-card absent-card">
-                    <h4>1. Chọn Bảo Vệ/Đơn Nghỉ Phép</h4>
-                    <label>Đơn nghỉ phép đã duyệt (chưa xử lý ca):</label>
+        <div className="reassign-container-new">
+            <div className={`step-card ${selectedLeaveRequest ? 'step-done' : 'step-active'}`}>
+                <h4><span className="step-number">1</span> Chọn Đơn Nghỉ Phép</h4>
+                {isLoadingRequests ? (
+                    <p>Đang tải đơn nghỉ phép...</p>
+                ) : (
                     <select
-                        value={selectedLeaveRequestId}
+                        value={selectedLeaveRequest?.id || ''}
                         onChange={(e) => handleLeaveRequestSelect(e.target.value)}
-                        disabled={isLoadingLeaveRequests}
+                        className="form-select"
                     >
-                        <option value="">-- {isLoadingLeaveRequests ? "Đang tải..." : "Chọn đơn nghỉ"} --</option>
+                        <option value="">-- Chọn đơn nghỉ đã duyệt --</option>
                         {approvedRequests.map(req => (
                             <option key={req.id} value={req.id}>
-                                {req.guardName} (Nghỉ từ {parseISO(req.startDate).toLocaleDateString('vi-VN')})
+                                {req.guardName} (Nghỉ từ {parseISO(req.startDate).toLocaleDateString('vi-VN')} 
+                                {" "}đến {parseISO(req.endDate).toLocaleDateString('vi-VN')})
                             </option>
                         ))}
                     </select>
-                </div>
-
-                <div className="swap-icon">
-                    <i className="fas fa-arrow-right"></i>
-                </div>
-
-                <div className="shift-card replacement-card">
-                    <h4>2. Chọn Ca Cần Bù</h4>
-                    <label>Ca trực của bảo vệ trong thời gian nghỉ:</label>
-                    <select
-                        value={selectedShiftId}
-                        onChange={(e) => handleShiftSelect(e.target.value)}
-                        disabled={!selectedLeaveRequestId || isLoadingShifts}
-                    >
-                        <option value="">-- {isLoadingShifts ? "Đang tải ca..." : "Chọn ca cần bù"} --</option>
-                        {shiftsToReassign.map(shift => (
-                            <option key={shift.id} value={shift.id}>
-                                {formatShiftName(shift)}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                )}
             </div>
 
-            <div className="shift-swap-panel" style={{ marginTop: '20px' }}>
-                <div className="shift-card replacement-card" style={{ width: '100%' }}>
-                    <h4>3. Chọn Bảo Vệ Thay Thế</h4>
-                    <label>Bảo vệ rảnh vào ngày đã chọn:</label>
-                    <select
-                        value={selectedGuardId}
-                        onChange={(e) => setSelectedGuardId(e.target.value)}
-                        disabled={!selectedShiftId || isLoadingGuards}
-                    >
-                        <option value="">-- {isLoadingGuards ? "Đang tải..." : "Chọn bảo vệ thay thế"} --</option>
-                        {availableGuards.map(guard => (
-                            <option key={guard.id} value={guard.id}>
-                                {guard.fullName} (ID: {guard.identityNumber}, Đội: {guard.team})
-                            </option>
-                        ))}
-                    </select>
-                    {!isLoadingGuards && selectedShiftId && availableGuards.length === 0 && (
-                        <p className="no-shift">Không tìm thấy bảo vệ nào rảnh vào ngày này.</p>
+            {selectedLeaveRequest && (
+                <div className={`step-card ${selectedShift ? 'step-done' : 'step-active'}`}>
+                    <h4><span className="step-number">2</span> Chọn Ca Cần Bù (của {selectedLeaveRequest.guardName})</h4>
+                    {isLoadingShifts ? (
+                        <p>Đang tải ca trực...</p>
+                    ) : shiftsToReassign.length > 0 ? (
+                        <div className="shift-radio-group">
+                            {shiftsToReassign.map(shift => (
+                                <label 
+                                    key={shift.id} 
+                                    className={`shift-radio-label ${selectedShift?.id === shift.id ? 'selected' : ''}`}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="shiftToReassign"
+                                        value={shift.id}
+                                        checked={selectedShift?.id === shift.id}
+                                        onChange={(e) => handleShiftSelect(e.target.value)}
+                                    />
+                                    <div className="shift-radio-content">
+                                        <strong>{parseISO(shift.shiftDate).toLocaleDateString('vi-VN')}</strong>
+                                        <span>{timeSlotMap[shift.timeSlot] || shift.timeSlot}</span>
+                                        <span>Tại {locationMap[shift.location] || shift.location}</span>
+                                    </div>
+                                </label>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-muted">Không tìm thấy ca trực nào cần bù cho đơn nghỉ này.</p>
                     )}
                 </div>
-            </div>
+            )}
 
-            <div className="swap-actions">
-                <button
-                    className="confirm-btn"
-                    onClick={handleAssignShift}
-                    disabled={!selectedShiftId || !selectedGuardId}
-                >
-                    Xác Nhận Phân Công
-                </button>
-            </div>
+            {selectedShift && (
+                <div className="step-card step-active">
+                    <h4><span className="step-number">3</span> Chọn Bảo Vệ Thay Thế</h4>
+                    <label>Bảo vệ rảnh vào ngày {parseISO(selectedShift.shiftDate).toLocaleDateString('vi-VN')}:</label>
+                    {isLoadingGuards ? (
+                        <p>Đang tải danh sách bảo vệ...</p>
+                    ) : availableGuards.length > 0 ? (
+                        <select
+                            value={selectedGuardId}
+                            onChange={(e) => setSelectedGuardId(e.target.value)}
+                            className="form-select"
+                        >
+                            <option value="">-- Chọn bảo vệ thay thế --</option>
+                            {availableGuards.map(guard => (
+                                <option key={guard.id} value={guard.id}>
+                                    {guard.fullName} (ID: {guard.identityNumber}, Đội: {guard.team})
+                                </option>
+                            ))}
+                        </select>
+                    ) : (
+                        <p className="text-muted">Không tìm thấy bảo vệ nào rảnh vào ngày này.</p>
+                    )}
+                    
+                    <div className="swap-actions">
+                        <button 
+                            className="confirm-btn" 
+                            onClick={handleAssignShift}
+                            disabled={!selectedGuardId || isLoadingShifts || isLoadingGuards}
+                        >
+                            Xác Nhận Phân Công
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
