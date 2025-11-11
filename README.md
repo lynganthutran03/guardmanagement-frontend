@@ -3,8 +3,8 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## How to log in
-For guard: guard1 / Guard123 (Can test from guard1 to guard10)
-For manager: manager1 / Manager123
+For guard: Guard1 / Guard123 (Can test from guard1 to guard28)
+For manager: Manager1 / Manager123
 
 ## Available Scripts
 
