@@ -1,0 +1,82 @@
+.shift-history-page {
+    padding: 20px;
+    font-family: sans-serif;
+    background-color: #f9fafb;
+    min-height: 100vh;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0 15px 0;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.filters select {
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.shift-header h4 {
+    margin: 0 0 8px 0;
+    font-size: 15px;
+    font-weight: bold;
+    color: #111827;
+}
+
+.shift-history-table {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.shift-history-header {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+.shift-history-row:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.filter-select {
+    flex: 1;
+    min-width: 200px;
+    font-size: 14px;
+}
+
+.excel-export-btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: var(--primary-color, #4caf50);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.excel-export-btn:hover {
+    background-color: var(--primary-color-dark, #388e3c);
+}
+
+.excel-export-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.shift-history-header,
+.shift-history-row {
+    grid-template-columns: 1fr 2fr 1fr 2fr 2fr;
+    align-items: center;
+    padding: 12px 16px;
+}

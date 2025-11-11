@@ -7,40 +7,46 @@ import * as XLSX from 'xlsx';
 
 axios.defaults.withCredentials = true;
 
-const timeSlotMap = {
-    DAY_SHIFT: "Ca Sáng (07:30 - 14:30)",
-    NIGHT_SHIFT: "Ca Tối (14:30 - 21:30)"
-};
-const locationMap = {
-    BLOCK_3: "Block 3", BLOCK_4: "Block 4", BLOCK_5: "Block 5",
-    BLOCK_6: "Block 6", BLOCK_8: "Block 8", BLOCK_10: "Block 10",
-    BLOCK_11: "Block 11", GATE_1: "Gate 1", GATE_2: "Gate 2", GATE_3: "Gate 3"
-};
-
 const MyShifts = () => {
     const { setTitle } = useContext(TitleContext);
     const [shifts, setShifts] = useState([]);
+    const [locationMap, setLocationMap] = useState({});
+    const [timeSlotMap, setTimeSlotMap] = useState({});
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         setTitle('Lịch Sử Ca Trực');
-        fetchShifts();
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const [locRes, tsRes, historyRes] = await Promise.all([
+                    axios.get("/api/admin/locations", { withCredentials: true }),
+                    axios.get("/api/admin/timeslots", { withCredentials: true }),
+                    axios.get('/api/shifts/history', { withCredentials: true })
+                ]);
+
+                setLocationMap(Object.fromEntries(
+                    locRes.data.map(loc => [loc.name, loc.name])
+                ));
+                setTimeSlotMap(Object.fromEntries(
+                    tsRes.data.map(ts => [ts.name, `${ts.name} (${ts.startTime} - ${ts.endTime})`])
+                ));
+
+                setShifts(historyRes.data);
+            } catch (err) {
+                console.error("Lỗi tải dữ liệu", err);
+                setShifts([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
     }, [setTitle]);
 
-    const fetchShifts = async () => {
-        setIsLoading(true);
-        try {
-            const res = await axios.get('/api/shifts/history', {
-                withCredentials: true
-            });
-            if (Array.isArray(res.data)) {
-                setShifts(res.data);
-            }
-        } catch (err) {
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    if (isLoading) {
+        return <div className="shift-history-page"><p>Đang tải lịch sử...</p></div>;
+    }
 
     const handleExportExcel = () => {
         if (shifts.length === 0) {

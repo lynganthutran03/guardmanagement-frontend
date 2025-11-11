@@ -7,27 +7,30 @@ import { differenceInDays, parseISO, addDays } from 'date-fns';
 
 axios.defaults.withCredentials = true;
 
-const LeaveRequestCheck = () => {
+const LeaveRequestCheck = ({ setNotificationCount }) => {
     const { setTitle } = useContext(TitleContext);
+
     const [pendingRequests, setPendingRequests] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        setTitle('Duyệt Nghỉ Phép');
-        fetchPendingRequests();
-    }, [setTitle]);
 
     const fetchPendingRequests = async () => {
         setIsLoading(true);
         try {
             const res = await axios.get("/api/leave-requests/pending");
             setPendingRequests(res.data);
+            setNotificationCount(res.data.length);
         } catch (err) {
             toast.error("Không thể tải danh sách đơn nghỉ phép.");
+            setNotificationCount(0);
         } finally {
             setIsLoading(false);
         }
     };
+    
+    useEffect(() => {
+        setTitle('Duyệt Nghỉ Phép');
+        fetchPendingRequests();
+    }, [setTitle, setNotificationCount]);
 
     const handleApprove = async (id) => {
         try {
@@ -36,6 +39,7 @@ const LeaveRequestCheck = () => {
             setPendingRequests(prevRequests => 
                 prevRequests.filter(req => req.id !== id)
             );
+            setNotificationCount(prevCount => prevCount - 1);
         } catch (err) {
             const message = err.response?.data?.message || "Lỗi khi duyệt đơn.";
             toast.error(message);
@@ -49,6 +53,7 @@ const LeaveRequestCheck = () => {
             setPendingRequests(prevRequests => 
                 prevRequests.filter(req => req.id !== id)
             );
+            setNotificationCount(prevCount => prevCount - 1);
         } catch (err) {
             const message = err.response?.data?.message || "Lỗi khi từ chối đơn.";
             toast.error(message);
@@ -76,7 +81,6 @@ const LeaveRequestCheck = () => {
     };
 
     if (isLoading) {
-        return <div className="leave-grid-container"><p>Đang tải đơn nghỉ phép...</p></div>;
     }
 
     return (
