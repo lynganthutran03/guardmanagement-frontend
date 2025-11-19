@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 axios.defaults.withCredentials = true;
 
-const AdminManageLocations = () => {
+const ManageLocation = () => {
     const { setTitle } = useContext(TitleContext);
     const [locations, setLocations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -111,4 +111,4 @@ const AdminManageLocations = () => {
     );
 };
 
-export default AdminManageLocations;
+export default ManageLocation;
