@@ -113,3 +113,60 @@
     border: 2px solid white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
+
+.attendance-widget {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-right: 20px;
+    padding-right: 20px;
+    border-right: 1px solid #e0e0e0;
+}
+
+.live-clock {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #2c3e50;
+    font-family: monospace;
+    letter-spacing: -1px;
+    min-width: 80px;
+    text-align: center;
+}
+
+.quick-checkin-btn {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+    transition: all 0.2s ease;
+}
+
+.quick-checkin-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);
+    background: linear-gradient(135deg, #43a047, #1b5e20);
+}
+
+.quick-checkin-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.quick-checkin-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.user-name {
+    margin-right: 10px;
+    font-weight: 500;
+    margin-left: 8px;
+}

@@ -1,9 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import './Topbar.css';
 
 const Topbar = ({ user, onLogout, title, notificationCount }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [hovering, setHovering] = useState(false);
+
+    const [currentTime, setCurrentTime] = useState(new Date());
+    const [isCheckingIn, setIsCheckingIn] = useState(false);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const handleQuickCheckIn = async () => {
+        setIsCheckingIn(true);
+        try {
+            const res = await axios.post("/api/attendance/check-in");
+            toast.success(res.data.message || "Điểm danh thành công!");
+        } catch (err) {
+            const message = err.response?.data?.message || "Lỗi khi điểm danh.";
+            toast.error(message);
+        } finally {
+            setIsCheckingIn(false);
+        }
+    };
+
+    const timeString = currentTime.toLocaleTimeString('vi-VN', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
 
     const handleLogout = () => {
         onLogout();
@@ -28,6 +57,26 @@ const Topbar = ({ user, onLogout, title, notificationCount }) => {
                 <h2>{title}</h2>
             </div>
             <div className="topbar-right">
+                {user.role === 'GUARD' && (
+                    <div className="attendance-widget">
+                        <span className="live-clock">{timeString}</span>
+                        <button 
+                            className="quick-checkin-btn" 
+                            onClick={handleQuickCheckIn}
+                            disabled={isCheckingIn}
+                            title="Kết nối Wifi trường để điểm danh"
+                        >
+                            {isCheckingIn ? (
+                                <i className="fa-solid fa-spinner fa-spin"></i>
+                            ) : (
+                                <>
+                                    <i className="fa-solid fa-fingerprint"></i> Điểm Danh
+                                </>
+                            )}
+                        </button>
+                    </div>
+                )}
+
                 {user.role !== 'ADMIN' && (
                     <div
                         className="notif-wrapper"
@@ -76,7 +125,7 @@ const Topbar = ({ user, onLogout, title, notificationCount }) => {
                     </div>
                 )}
                 <img src="/images/avatar.jpg" alt="Avatar" className="avatar" />
-                <span>{user.fullName}</span>
+                <span className="user-name">{user.fullName}</span>
                 <button className="logout-btn" onClick={handleLogout}>Đăng Xuất</button>
             </div>
         </div>
