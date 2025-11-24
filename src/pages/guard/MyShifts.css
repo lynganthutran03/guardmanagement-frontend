@@ -1,6 +1,6 @@
 .shift-history-page {
     padding: 20px;
-    background-color: #f9fafb;
+    background-color: #f9fafc;
 }
 
 .shift-history-controls {
@@ -17,34 +17,38 @@
 
 .shift-history-table {
     width: 100%;
-    border: 1px solid #e5e7eb;
+    border-collapse: collapse;
+    background-color: #ffffff;
     border-radius: 8px;
     overflow: hidden;
-    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .shift-history-header,
 .shift-history-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
     padding: 14px 20px;
-    font-size: 0.95rem;
+    align-items: center;
+    border-bottom: 1px solid #eee;
 }
 
 .shift-history-header {
-    background-color: #f3f4f6;
+    background-color: #f0f0f0;
     font-weight: bold;
-    color: #374151;
-    border-bottom: 1px solid #e5e7eb;
+    color: #444;
+    font-size: 14px;
+    text-transform: uppercase;
 }
 
 .shift-history-row {
-    border-bottom: 1px solid #e5e7eb;
-    color: #111827;
+    font-size: 14px;
+    color: #333;
+    transition: background-color 0.2s;
 }
 
-.shift-history-row:nth-child(even) {
-    background-color: #f9fafb;
+.shift-history-row:hover {
+    background-color: #f8f9fa;
 }
 
 .shift-history-row:last-child {
@@ -53,7 +57,10 @@
 
 .empty-row {
     text-align: center;
-    color: #6b7280;
+    color: #777;
+    font-style: italic;
+    display: block;
+    padding: 20px;
 }
 
 .excel-export-btn {
@@ -76,4 +83,29 @@
 .excel-export-btn:disabled {
     background-color: #ccc;
     cursor: not-allowed;
+}
+
+.status-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    min-width: 80px;
+}
+
+.status-tag.present {
+    background-color: #fff3cd;
+    color: #155724;
+}
+
+.status-tag.late {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-tag.absent {
+    background-color: #f8d7da;
+    color: #721c24;
 }

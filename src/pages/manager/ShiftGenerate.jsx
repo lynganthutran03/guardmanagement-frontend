@@ -2,7 +2,7 @@ import { React, useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import { TitleContext } from '../../context/TitleContext';
 import './ShiftGenerate.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { DayPicker } from 'react-day-picker';
@@ -19,6 +19,7 @@ const ShiftGenerate = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [allGuards, setAllGuards] = useState([]);
     const [teamGuards, setTeamGuards] = useState([]);
+    const [isSchedulingExisting, setIsSchedulingExisting] = useState(false);
 
     useEffect(() => {
         setTitle('Tạo Lịch Làm Việc Theo Đội');
@@ -43,6 +44,30 @@ const ShiftGenerate = () => {
             setTeamGuards([]);
         }
     }, [selectedTeam, allGuards]);
+
+    useEffect(() => {
+        const checkSchedule = async () => {
+            if(!selectedTeam || !selectedMonday) {
+                setIsSchedulingExisting(false);
+                return;
+            }
+
+            const formattedDate = format(selectedMonday, 'yyyy-MM-dd');
+            try {
+                const res = await axios.get("/api/manager/schedule/check-existence", {
+                    param: {
+                        team: selectedTeam,
+                        weekStartDate: formattedDate
+                    }
+                });
+                setIsSchedulingExisting(res.data);
+            } catch (err) {
+                console.error("Lỗi khi kiểm tra lịch: ", err);
+            }
+        };
+
+        checkSchedule();
+    }, [selectedTeam, selectedMonday]);
 
     const handleDaySelect = (date) => {
         if (date) {
@@ -101,6 +126,7 @@ const ShiftGenerate = () => {
                                 fixedWeeks
                                 locale={vi}
                                 weekStartsOn={1}
+                                disabled={{ before: new Date() }}
                                 modifiersClassNames={{
                                     selected: 'my-selected-day',
                                     today: 'my-today-day'
@@ -143,15 +169,13 @@ const ShiftGenerate = () => {
                 </div>
 
                 <button
-                    className="btn btn-success w-100"
+                    className={`btn w-100 mt-4 ${isSchedulingExisting ? 'btn-secondary' : 'btn-success'}`}
                     onClick={handleGenerateWeekForTeam}
-                    disabled={isLoading || !selectedTeam || !selectedMonday}
+                    disabled={isLoading || !selectedTeam || !selectedMonday || isSchedulingExisting}
                 >
                     {isLoading ? "Đang tạo..." : "Tạo Lịch 7 Ngày Cho Đội"}
                 </button>
             </div>
-
-            <ToastContainer position="top-right" autoClose={3000} />
         </div>
     );
 };

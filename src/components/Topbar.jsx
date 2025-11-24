@@ -9,6 +9,7 @@ const Topbar = ({ user, onLogout, title, notificationCount }) => {
 
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isCheckingIn, setIsCheckingIn] = useState(false);
+    const [isCheckedIn, setIsCheckedIn] = useState(false);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -22,9 +23,15 @@ const Topbar = ({ user, onLogout, title, notificationCount }) => {
         try {
             const res = await axios.post("/api/attendance/check-in");
             toast.success(res.data.message || "Điểm danh thành công!");
+            setIsCheckedIn(true);
         } catch (err) {
             const message = err.response?.data?.message || "Lỗi khi điểm danh.";
-            toast.error(message);
+            if(message.includes("đã điểm danh")) {
+                setIsCheckedIn(true);
+                toast.info("Bạn đã điểm danh cho ca trực này rồi.");
+            } else {
+                toast.error(message);
+            }
         } finally {
             setIsCheckingIn(false);
         }
@@ -61,17 +68,17 @@ const Topbar = ({ user, onLogout, title, notificationCount }) => {
                     <div className="attendance-widget">
                         <span className="live-clock">{timeString}</span>
                         <button 
-                            className="quick-checkin-btn" 
+                            className={`quick-checkin-btn ${isCheckedIn ? 'checked-in' : ''}`}
                             onClick={handleQuickCheckIn}
-                            disabled={isCheckingIn}
-                            title="Kết nối Wifi trường để điểm danh"
+                            disabled={isCheckingIn || isCheckedIn}
+                            title={isCheckedIn ? "Bạn đã điểm danh hôm nay" : "Kết nối Wifi trường để điểm danh."}
                         >
                             {isCheckingIn ? (
-                                <i className="fa-solid fa-spinner fa-spin"></i>
+                                <><i className="fa-solid fa-spinner fa-spin"></i></>
+                            ) : isCheckedIn ? (
+                                <><i className="fa-solid fa-fingerprint"></i> Đã Điểm Danh</>
                             ) : (
-                                <>
-                                    <i className="fa-solid fa-fingerprint"></i> Điểm Danh
-                                </>
+                                <><i className="fa-solid fa-fingerprint"></i> Điểm Danh</>
                             )}
                         </button>
                     </div>

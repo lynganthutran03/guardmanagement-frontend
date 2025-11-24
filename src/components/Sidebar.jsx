@@ -33,6 +33,9 @@ const Sidebar = ({ user, setPage }) => {
                             <li onClick={() => setPage('absence')}>
                                 <i className="fa-solid fa-calendar-xmark"></i>Danh Sách Nghỉ Phép
                             </li>
+                            <li onClick={() => setPage('payroll')}>
+                                <i className="fa-solid fa-money-bill-wave"></i>Xem Lương
+                            </li>
                         </ul>
                     )}
                 </>
@@ -53,6 +56,9 @@ const Sidebar = ({ user, setPage }) => {
                     </li>
                     <li onClick={() => setPage('rearrange')}>
                         <i className="fa-solid fa-user-pen"></i>Phân Công Ca Trực Bù
+                    </li>
+                    <li onClick={() => setPage('payroll')}>
+                        <i className="fa-solid fa-file-invoice-dollar"></i>Bảng Lương
                     </li>
                     <li onClick={toggleView} className="dropdown-parent">
                         <i className="fa-solid fa-folder-closed"></i>Theo Dõi

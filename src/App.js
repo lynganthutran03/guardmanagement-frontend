@@ -12,6 +12,7 @@ import TodayShift from './pages/guard/TodayShift';
 import AbsenceRequestForm from './pages/guard/AbsenceRequestForm';
 import MyShifts from './pages/guard/MyShifts';
 import ListOfAbsence from './pages/guard/ListOfAbsence';
+import MyPayroll from './pages/guard/MyPayroll';
 
 import ShiftGenerate from './pages/manager/ShiftGenerate';
 import LeaveRequestCheck from './pages/manager/LeaveRequestCheck';
@@ -19,6 +20,7 @@ import ShiftReassign from './pages/manager/ShiftReassign';
 import ManagerHomePage from './pages/manager/ManagerHomePage';
 import AbsenceStats from './pages/manager/AbsenceStats';
 import ShiftHistory from './pages/manager/ShiftHistory';
+import Payroll from './pages/manager/Payroll';
 
 const AppContent = () => {
   const [user, setUser] = useState(null);
@@ -59,11 +61,13 @@ const AppContent = () => {
           {user.role === 'GUARD' && currentPage === 'request' && <AbsenceRequestForm user={user} />}
           {user.role === 'GUARD' && currentPage === 'my-shifts' && <MyShifts user={user} />}
           {user.role === 'GUARD' && currentPage === 'absence' && <ListOfAbsence user={user} />}
+          {user.role === 'GUARD' && currentPage === 'payroll' && <MyPayroll user={user} />}
 
           {user.role === 'MANAGER' && currentPage === 'manager-home' && <ManagerHomePage user={user} />}
           {user.role === 'MANAGER' && currentPage === 'generate-shift' && <ShiftGenerate user={user} />}
           {user.role === 'MANAGER' && currentPage === 'approval' && <LeaveRequestCheck user={user} setNotificationCount={setNotificationCount} />}
           {user.role === 'MANAGER' && currentPage === 'rearrange' && <ShiftReassign user={user} />}
+          {user.role === 'MANAGER' && currentPage === 'payroll' && <Payroll user={user} />}
           {user.role === 'MANAGER' && currentPage === 'absence-history' && <AbsenceStats user={user} />}
           {user.role === 'MANAGER' && currentPage === 'shift-history' && <ShiftHistory user={user} />}
         </AppLayout>

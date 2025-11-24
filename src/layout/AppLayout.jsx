@@ -1,6 +1,8 @@
 import React from 'react';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './AppLayout.css';
 
 const AppLayout = ({ user, title, setPage, onLogout, children, notificationCount }) => {
@@ -15,6 +17,7 @@ const AppLayout = ({ user, title, setPage, onLogout, children, notificationCount
                     notificationCount={notificationCount}
                 />
                 <div className="content">{children}</div>
+                <ToastContainer position="top-right" autoClose={3000} />
             </div>
         </div>
     );

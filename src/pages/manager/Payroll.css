@@ -1,0 +1,115 @@
+.payroll-page {
+    padding: 20px;
+}
+
+.payroll-filters {
+    display: flex;
+    gap: 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.select-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.select-group label {
+    font-weight: 600;
+    color: #555;
+}
+
+.select-group select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 100px;
+}
+
+.payroll-table-container {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.payroll-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.payroll-table th,
+.payroll-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.payroll-table th {
+    background-color: #f8f9fa;
+    font-weight: 700;
+    color: #333;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+.payroll-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.payroll-table tbody tr:hover {
+    background-color: #fdfdfd;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.salary-col {
+    font-weight: bold;
+    color: #2e7d32;
+    font-size: 15px;
+}
+
+.late-col .late-tag {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.excel-export-btn {
+    margin-left: auto;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.excel-export-btn:hover {
+    background-color: #388e3c;
+}
+
+.excel-export-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

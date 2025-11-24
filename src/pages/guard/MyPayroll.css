@@ -1,0 +1,78 @@
+.my-payroll-page {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.payroll-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.payroll-filter select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    flex: 1;
+}
+
+.view-btn {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.payroll-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+
+.payroll-header {
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.payroll-header h4 {
+    margin: 0 0 10px 0;
+    font-weight: normal;
+    opacity: 0.9;
+}
+
+.total-amount {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.payroll-details {
+    padding: 20px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 1.1rem;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item.warning strong {
+    color: #ff9800;
+}

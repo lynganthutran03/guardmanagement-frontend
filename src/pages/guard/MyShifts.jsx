@@ -7,45 +7,47 @@ import * as XLSX from 'xlsx';
 
 axios.defaults.withCredentials = true;
 
+const statusMap = {
+    PRESENT: { text: "Có mặt", className: "present" },
+    LATE: { text: "Đi trễ", className: "late" },
+    ABSENT: { text: "Vắng mặt", className: "absent" }
+};
+
 const MyShifts = () => {
     const { setTitle } = useContext(TitleContext);
     const [shifts, setShifts] = useState([]);
-    const [locationMap, setLocationMap] = useState({});
-    const [timeSlotMap, setTimeSlotMap] = useState({});
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         setTitle('Lịch Sử Ca Trực');
-        const fetchData = async () => {
+        const fetchHistory = async () => {
             setIsLoading(true);
             try {
-                const [locRes, tsRes, historyRes] = await Promise.all([
-                    axios.get("/api/admin/locations", { withCredentials: true }),
-                    axios.get("/api/admin/timeslots", { withCredentials: true }),
-                    axios.get('/api/shifts/history', { withCredentials: true })
-                ]);
-
-                setLocationMap(Object.fromEntries(
-                    locRes.data.map(loc => [loc.name, loc.name])
-                ));
-                setTimeSlotMap(Object.fromEntries(
-                    tsRes.data.map(ts => [ts.name, `${ts.name} (${ts.startTime} - ${ts.endTime})`])
-                ));
-
-                setShifts(historyRes.data);
+                const res = await axios.get('/api/shifts/history');
+                if (Array.isArray(res.data)) {
+                    setShifts(res.data);
+                }
             } catch (err) {
-                console.error("Lỗi tải dữ liệu", err);
-                setShifts([]);
             } finally {
                 setIsLoading(false);
             }
         };
-
-        fetchData();
+        fetchHistory();
     }, [setTitle]);
 
-    if (isLoading) {
-        return <div className="shift-history-page"><p>Đang tải lịch sử...</p></div>;
+    const formatTimeSlot = (shift) => {
+        if (shift.startTime && shift.endTime) {
+            const start = shift.startTime.toString().slice(0, 5);
+            const end = shift.endTime.toString().slice(0, 5);
+
+            return `${start} - ${end}`;
+        }
+        return shift.timeSlot;
+    }
+
+    const formatCheckInTime = (timeString) => {
+        if (!timeString) return "-";
+        return new Date(timeString).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
     }
 
     const handleExportExcel = () => {
@@ -55,8 +57,10 @@ const MyShifts = () => {
 
         const exportData = shifts.map(shift => ({
             'Ngày': parseISO(shift.shiftDate).toLocaleDateString('vi-VN'),
-            'Ca trực': timeSlotMap[shift.timeSlot] || shift.timeSlot,
-            'Khu vực': locationMap[shift.location] || shift.location
+            'Ca trực': formatTimeSlot(shift),
+            'Khu vực': shift.location,
+            'Trạng thái': statusMap[shift.attendanceStatus] || "Chưa rõ",
+            'Giờ điểm danh': shift.checkInTime ? new Date(shift.checkInTime).toLocaleTimeString('vi-VN') : '-'
         }));
 
         const ws = XLSX.utils.json_to_sheet(exportData);
@@ -72,18 +76,12 @@ const MyShifts = () => {
     };
 
     if (isLoading) {
-        return <div className="shift-history-page"><p>Đang tải dữ liệu...</p></div>;
+        return <div className="shift-history-page"><p>Đang tải lịch sử...</p></div>;
     }
-
     return (
         <div className="shift-history-page">
             <div className="shift-history-controls">
-                <h2>Lịch Sử Ca Trực Của Bạn</h2>
-                <button
-                    onClick={handleExportExcel}
-                    className="excel-export-btn"
-                    disabled={shifts.length === 0}
-                >
+                <button onClick={handleExportExcel} className="excel-export-btn" disabled={shifts.length === 0}>
                     <i className="fa-solid fa-file-excel"></i> Xuất Excel
                 </button>
             </div>
@@ -93,20 +91,34 @@ const MyShifts = () => {
                     <span>Ngày</span>
                     <span>Ca trực</span>
                     <span>Khu vực</span>
+                    <span style={{ textAlign: 'center' }}>Trạng thái</span>
+                    <span style={{ textAlign: 'center' }}>Giờ điểm danh</span>
                 </div>
 
                 {shifts.length === 0 ? (
                     <div className="shift-history-row empty-row">
-                        <span>Không có ca trực nào trong quá khứ.</span>
+                        <span>Không có dữ liệu lịch sử.</span>
                     </div>
                 ) : (
-                    shifts.map(shift => (
-                        <div key={shift.id} className="shift-history-row">
-                            <span>{parseISO(shift.shiftDate).toLocaleDateString('vi-VN')}</span>
-                            <span>{timeSlotMap[shift.timeSlot] || shift.timeSlot}</span>
-                            <span>{locationMap[shift.location] || shift.location}</span>
-                        </div>
-                    ))
+                    shifts.map(shift => {
+                        const statusInfo = statusMap[shift.attendanceStatus] || { text: shift.attendanceStatus || "Chưa rõ", className: "pending" };
+
+                        return (
+                            <div key={shift.id} className="shift-history-row">
+                                <span>{parseISO(shift.shiftDate).toLocaleDateString('vi-VN')}</span>
+                                <span>{formatTimeSlot(shift)}</span>
+                                <span>{shift.location}</span>
+                                <span style={{ textAlign: 'center' }}>
+                                    <span className={`status-tag ${statusInfo.className}`}>
+                                        {statusInfo.text}
+                                    </span>
+                                </span>
+                                <span style={{ textAlign: 'center', fontSize: '0.9em', color: '#666' }}>
+                                    {formatCheckInTime(shift.checkInTime)}
+                                </span>
+                            </div>
+                        );
+                    })
                 )}
             </div>
         </div>
