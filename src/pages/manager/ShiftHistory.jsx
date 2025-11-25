@@ -17,6 +17,12 @@ const locationMap = {
     BLOCK_11: "Block 11", GATE_1: "Gate 1", GATE_2: "Gate 2", GATE_3: "Gate 3"
 };
 
+const statusMap = {
+    PRESENT: { text: "Có mặt", className: "present" },
+    LATE: { text: "Đi trễ", className: "late" },
+    ABSENT: { text: "Vắng mặt", className: "absent" }
+};
+
 axios.defaults.withCredentials = true;
 
 const ShiftHistory = () => {
@@ -154,23 +160,33 @@ const ShiftHistory = () => {
             </div>
 
             <div className="shift-history-table">
-                <div className="shift-history-header">
+                <div className="shift-history-header" style={{ gridTemplateColumns: '1fr 2fr 1fr 2fr 1fr 1fr' }}>
                     <span>Ngày</span>
                     <span>Tên Bảo Vệ</span>
                     <span>Mã Bảo Vệ</span>
                     <span>Ca Trực</span>
                     <span>Khu Vực</span>
+                    <span style={{textAlign: 'center'}}>Trạng thái</span>
                 </div>
                 {filteredShifts.length > 0 ? (
-                    filteredShifts.map((s, i) => (
-                        <div className="shift-history-row" key={s.id || i}>
-                            <span>{parseISO(s.shiftDate).toLocaleDateString('vi-VN')}</span>
-                            <span>{s.guardName || '(Chưa gán)'}</span>
-                            <span>{s.guardIdentityNumber || ''}</span>
-                            <span>{timeSlotMap[s.timeSlot] || s.timeSlot}</span>
-                            <span>{locationMap[s.location] || s.location}</span>
-                        </div>
-                    ))
+                    filteredShifts.map((s, i) => {
+                        const statusInfo = statusMap[s.attendanceStatus] || { text: "Chưa rõ", className: "pending" };
+                        return (
+                            <div className="shift-history-row" key={s.id || i} style={{ gridTemplateColumns: '1fr 2fr 1fr 2fr 1fr 1fr' }}>
+                                <span>{parseISO(s.shiftDate).toLocaleDateString('vi-VN')}</span>
+                                <span>{s.guardName || '(Chưa gán)'}</span>
+                                <span>{s.guardIdentityNumber || ''}</span>
+                                <span>{timeSlotMap[s.timeSlot] || s.timeSlot}</span>
+                                <span>{locationMap[s.location] || s.location}</span>
+                                
+                                <span style={{textAlign: 'center'}}>
+                                    <span className={`status-tag ${statusInfo.className}`}>
+                                        {statusInfo.text}
+                                    </span>
+                                </span>
+                            </div>
+                        );
+                    })
                 ) : (
                     <div className="shift-history-row" style={{ textAlign: 'center', gridColumn: '1 / -1' }}>
                         Không có dữ liệu

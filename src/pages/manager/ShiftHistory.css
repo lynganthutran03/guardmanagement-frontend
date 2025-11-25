@@ -80,3 +80,28 @@
   align-items: center;
   padding: 12px 16px;
 }
+
+.status-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  min-width: 80px;
+}
+
+.status-tag.present {
+  background-color: #fff3cd;
+  color: #155724;
+}
+
+.status-tag.late {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-tag.absent {
+  background-color: #f8d7da;
+  color: #721c24;
+}
