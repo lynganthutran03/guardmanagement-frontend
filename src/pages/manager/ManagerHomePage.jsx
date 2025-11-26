@@ -120,7 +120,7 @@ const ManagerHomePage = () => {
                 </div>
 
                 <div className="card">
-                    <h4>Đơn nghỉ sắp tới (Đã duyệt)</h4>
+                    <h4>Đơn nghỉ cần duyệt</h4>
                     {stats?.upcomingLeaves && stats.upcomingLeaves.length > 0 ? (
                         <ul className="leave-list">
                             {stats.upcomingLeaves.map((item, index) => (

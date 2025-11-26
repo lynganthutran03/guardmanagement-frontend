@@ -21,7 +21,8 @@ const ManageLocation = () => {
         setIsLoading(true);
         try {
             const res = await axios.get("/api/admin/locations");
-            setLocations(res.data || []);
+            const sortedData = (res.data || []).sort((a, b) => a.id - b.id);
+            setLocations(sortedData);
         } catch (err) {
             toast.error("Không thể tải danh sách khu vực.");
         } finally {
@@ -42,58 +43,62 @@ const ManageLocation = () => {
             setNewLocationName('');
             fetchLocations();
         } catch (err) {
-            toast.error("Lỗi khi tạo khu vực: " + (err.response?.data?.message || err.message));
+            toast.error("Lỗi khi tạo khu vực.");
         }
     };
 
     const handleDeleteLocation = async (id, name) => {
-        if (!window.confirm(`Bạn có chắc chắn muốn xóa khu vực "${name}"? Hành động này có thể gây lỗi nếu ca trực đang sử dụng nó.`)) {
-            return;
-        }
+        if (!window.confirm(`Bạn có chắc chắn muốn xóa khu vực "${name}"?`)) return;
 
         try {
             await axios.delete(`/api/admin/locations/${id}`);
             toast.success(`Đã xóa khu vực "${name}".`);
             fetchLocations();
         } catch (err) {
-            toast.error("Lỗi khi xóa khu vực: " + (err.response?.data?.message || err.message));
+            toast.error("Lỗi khi xóa khu vực (có thể đang được sử dụng).");
         }
     };
 
     return (
-        <div className="shift-history-page">
-            <div className="filters" style={{ marginBottom: '20px' }}>
-                <form onSubmit={handleCreateLocation} style={{ display: 'flex', gap: '10px', width: '100%' }}>
-                    <input
-                        type="text"
-                        value={newLocationName}
-                        onChange={(e) => setNewLocationName(e.target.value)}
-                        placeholder="Nhập tên khu vực mới (ví dụ: Kho 1)"
-                        className="form-control"
-                        style={{ flex: 1 }}
-                    />
-                    <button type="submit" className="excel-export-btn">
+        <div className="admin-page-layout">
+            <div className="admin-form-container">
+                <h3>Thêm Khu Vực Mới</h3>
+                <form onSubmit={handleCreateLocation}>
+                    <div className="admin-form-group">
+                        <label>Tên Khu Vực (ví dụ: Gate 1, Block A)</label>
+                        <input
+                            type="text"
+                            value={newLocationName}
+                            onChange={(e) => setNewLocationName(e.target.value)}
+                            placeholder="Nhập tên..."
+                            required
+                        />
+                    </div>
+                    <button type="submit" className="admin-submit-btn">
                         <i className="fa-solid fa-plus"></i> Thêm Mới
                     </button>
                 </form>
             </div>
 
-            <div className="shift-history-table">
-                <div className="shift-history-header" style={{ gridTemplateColumns: '1fr 3fr 1fr' }}>
+            <div className="admin-list-container">
+                <div className="admin-list-header">
                     <span>ID</span>
                     <span>Tên Khu Vực</span>
                     <span>Hành Động</span>
                 </div>
+                
                 {isLoading ? (
-                    <div className="shift-history-row" style={{ textAlign: 'center' }}>Đang tải...</div>
+                    <div className="admin-list-row" style={{ textAlign: 'center', gridColumn: '1 / -1' }}>
+                        Đang tải...
+                    </div>
                 ) : locations.length > 0 ? (
                     locations.map((loc) => (
-                        <div className="shift-history-row" style={{ gridTemplateColumns: '1fr 3fr 1fr' }} key={loc.id}>
+                        <div className="admin-list-row" key={loc.id}>
                             <span>{loc.id}</span>
                             <span>{loc.name}</span>
                             <span>
                                 <button
-                                    className="btn btn-danger btn-sm"
+                                    className="delete-btn"
                                     onClick={() => handleDeleteLocation(loc.id, loc.name)}
                                 >
                                     <i className="fa-solid fa-trash"></i> Xóa
@@ -102,7 +107,7 @@ const ManageLocation = () => {
                         </div>
                     ))
                 ) : (
-                    <div className="shift-history-row" style={{ textAlign: 'center' }}>
+                    <div className="admin-list-row" style={{ textAlign: 'center', gridColumn: '1 / -1' }}>
                         Không có dữ liệu
                     </div>
                 )}

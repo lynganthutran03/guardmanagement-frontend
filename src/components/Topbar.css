@@ -61,26 +61,37 @@
     border: 1px solid #ddd;
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    width: 380px;
-    padding: 10px;
+    width: 400px;
+    padding: 0;
     font-size: 14px;
     z-index: 100;
+    overflow: hidden;
+}
+
+.notif-header {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    font-weight: bold;
+    background-color: #f8f9fa;
+    color: #333;
 }
 
 .notif-item {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    padding: 8px;
-    border-radius: 6px;
-    transition: background-color 0.2s ease;
+    gap: 12px;
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
     cursor: pointer;
-    width: 100%;
-    box-sizing: border-box;
 }
 
 .notif-item:hover {
-    background-color: #f5f5f5;
+    background-color: #f1f5f9;
+}
+
+.notif-item.unread {
+    background-color: #e3f2fd;
 }
 
 .notif-icon-line {
@@ -94,6 +105,28 @@
 
 .notif-dropdown strong {
     font-weight: bold;
+}
+
+.notif-list {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.notif-icon-box {
+    color: #2196f3;
+    margin-top: 2px;
+}
+
+.notif-content p {
+    margin: 0 0 5px 0;
+    font-size: 13.5px;
+    line-height: 1.4;
+    color: #333;
+}
+
+.notif-time {
+    font-size: 11px;
+    color: #888;
 }
 
 .notif-badge {
@@ -112,6 +145,13 @@
     font-weight: bold;
     border: 2px solid white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.notif-item.empty, .notif-item.loading {
+    justify-content: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
 }
 
 .attendance-widget {

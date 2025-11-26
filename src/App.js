@@ -3,9 +3,10 @@ import Login from './components/Login';
 import { TitleProvider, TitleContext } from './context/TitleContext';
 import AppLayout from './layout/AppLayout';
 
-import ManageLocation from './pages/admin/ManageLocation';
 import ManageGuard from './pages/admin/ManageGuard';
 import ManageManager from './pages/admin/ManageManager';
+import ManageLocation from './pages/admin/ManageLocation';
+import ManageTimeSlot from './pages/admin/ManageTimeSlot';
 
 import GuardHomePage from './pages/guard/GuardHomePage';
 import TodayShift from './pages/guard/TodayShift';
@@ -52,9 +53,10 @@ const AppContent = () => {
           title={title}
           notificationCount={notificationCount}
         >
-          {user.role === 'ADMIN' && currentPage === 'admin-locations' && <ManageLocation user={user} />}
           {user.role === 'ADMIN' && currentPage === 'admin-guards' && <ManageGuard user={user} />}
           {user.role === 'ADMIN' && currentPage === 'admin-managers' && <ManageManager user={user} />}
+          {user.role === 'ADMIN' && currentPage === 'admin-locations' && <ManageLocation user={user} />}
+          {user.role === 'ADMIN' && currentPage === 'admin-timeslots' && <ManageTimeSlot user={user} />}
 
           {user.role === 'GUARD' && currentPage === 'guard-home' && <GuardHomePage user={user} />}
           {user.role === 'GUARD' && currentPage === 'today-shift' && <TodayShift user={user} />}
